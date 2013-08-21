@@ -14,7 +14,7 @@ CampusInfoManageSys
 				Message msg = new Message(); // 新建一个Message对象
 				msg.setType("登录"); // 设置需要服务器处理的类型，此处为登录
 				msg.setData(user); // 设置数据，此处为要登录的用户
-				... // Message其他具体的属性待讨论
+				// ... // Message其他具体的属性待讨论
 				
 				// 用于发送Message的输出流，此处socket为ClientSrvHelper对象创建时保存的Socket对象
 				ObjectOutputStream os = new ObjectOutputStream(socket.getOutputStream()); 
@@ -25,7 +25,7 @@ CampusInfoManageSys
 				ObjectInputStream is = new ObjectInputStream(socket.getInputStream());
 				Message msgRet = (Message) is.readObject(); // 得到服务器处理完msg(Message)发回的反馈Message，即处理结果
 				// 以下根据msgRet中的状态域来判断是登录成功进入主界面还是登陆失败提示错误信息
-				...
+				// ...
 			}
 
 
