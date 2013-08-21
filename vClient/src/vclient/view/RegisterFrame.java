@@ -17,9 +17,12 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import org.omg.CORBA.ShortSeqHelper;
+
 import vclient.srv.ClientSrvHelper;
 
-public class RegisterFrame extends JFrame implements ActionListener {
+public class RegisterFrame extends JFrame 
+		implements ActionListener {
 	// 信息Fields标题
 	private JLabel jlbId;
 	private JLabel jlbPwd;
@@ -61,45 +64,16 @@ public class RegisterFrame extends JFrame implements ActionListener {
 	private JButton jbtOk = new JButton("确定");
 	private JButton jbtCancel = new JButton("取消");
 	
-	// 与服务器的连接
-	Socket socket;
+	// 保存ClientSrvHelper进行服务
+	ClientSrvHelper clientSrv;
 	
 	public RegisterFrame() {
 		this(null);
 	}
 
-	public RegisterFrame(Socket socket) {
-		this.socket = socket;
-		
-		this.setLayout(new GridLayout(9, 2));
-		this.add(jlbId = new JLabel("ID"));
-		this.add(jtfId = new JTextField());
-		this.add(jlbPwd = new JLabel("密码"));
-		this.add(jpfPwd = new JPasswordField());
-		this.add(jlbIdNum = new JLabel("学号/工号"));
-		this.add(jtfIdNum = new JTextField());
-		this.add(jlbName = new JLabel("姓名"));
-		this.add(jtfName = new JTextField());
-		this.add(jlbSex = new JLabel("性别"));
-		JPanel jpSexes = new JPanel();
-		jpSexes.add(jchkMale = new JCheckBox("男"));
-		jpSexes.add(jchkFemale = new JCheckBox("女")); 
-		ButtonGroup bgSexes = new ButtonGroup();
-		jchkMale.setSelected(true);
-		bgSexes.add(jchkMale);
-		bgSexes.add(jchkFemale);
-		this.add(jpSexes);
-		this.add(jlbDepart = new JLabel("院系"));
-		this.add(jcboDepart = new JComboBox<String>(departItems));
-		this.add(jlbMajor = new JLabel("专业"));
-		this.add(jcboMajor = new JComboBox<String>(getMajors()));
-		this.add(jlbIdentity = new JLabel("身份"));
-		this.add(jcboIdentity = new JComboBox<String>(identityItems));
-		this.add(jbtOk);
-		this.add(jbtCancel);
-		jbtOk.addActionListener(this);
-		jbtCancel.addActionListener(this);
-		jcboDepart.addActionListener(this);
+	public RegisterFrame(ClientSrvHelper clientSrv) {
+		this.clientSrv = clientSrv;
+		initComponents();
 	}
 
 	/**
@@ -119,23 +93,18 @@ public class RegisterFrame extends JFrame implements ActionListener {
 	}
 	
 	public static void main(String[] args) {
-		JFrame frame = new RegisterFrame();
-		frame.setTitle("注册");
-		frame.setVisible(true);
-		frame.pack();
-		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		new RegisterFrame();
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == jbtOk) {
 			// TODO: 做验证
-			ClientSrvHelper srvHelper = new ClientSrvHelper(socket);
 			User user = getUserInfo();
 			System.out.println(user.getId() + " " + user.getPassword() + " "
 					+ user.getSex() + " " + user.getName() + user.getIdNum() 
 					+ user.getDepartment() + " " + user.getMajor() + user.getIdentity());
-			user = srvHelper.register(user);
+			user = clientSrv.register(user);
 		} else if (e.getSource() == jbtCancel) {
 			this.dispose();
 		} else if (e.getSource() == jcboDepart) { // 院系变化，变化可选专业
@@ -163,5 +132,56 @@ public class RegisterFrame extends JFrame implements ActionListener {
 		user.setMajor((String) jcboMajor.getSelectedItem());
 		user.setIdentity((String) jcboIdentity.getSelectedItem());
 		return user;
+	}
+	
+	/**
+	 * 初始化控件及布局
+	 */
+	private void initComponents() {
+		this.setLayout(new GridLayout(9, 2));
+		this.add(jlbId = new JLabel("ID"));
+		this.add(jtfId = new JTextField());
+		this.add(jlbPwd = new JLabel("密码"));
+		this.add(jpfPwd = new JPasswordField());
+		this.add(jlbIdNum = new JLabel("学号/工号"));
+		this.add(jtfIdNum = new JTextField());
+		this.add(jlbName = new JLabel("姓名"));
+		this.add(jtfName = new JTextField());
+		this.add(jlbSex = new JLabel("性别"));
+		JPanel jpSexes = new JPanel();
+		jpSexes.add(jchkMale = new JCheckBox("男"));
+		jpSexes.add(jchkFemale = new JCheckBox("女")); 
+		ButtonGroup bgSexes = new ButtonGroup();
+		jchkMale.setSelected(true);
+		bgSexes.add(jchkMale);
+		bgSexes.add(jchkFemale);
+		this.add(jpSexes);
+		this.add(jlbDepart = new JLabel("院系"));
+		this.add(jcboDepart = new JComboBox<String>(departItems));
+		this.add(jlbMajor = new JLabel("专业"));
+		this.add(jcboMajor = new JComboBox<String>(getMajors()));
+		this.add(jlbIdentity = new JLabel("身份"));
+		this.add(jcboIdentity = new JComboBox<String>(identityItems));
+		this.add(jbtOk);
+		this.add(jbtCancel);
+	}
+
+	/**
+	 * 设置框架属性
+	 */
+	private void setProperties() {
+		this.setTitle("注册");
+		this.setVisible(true);
+		this.pack();
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	}
+
+	/**
+	 * 设置控件响应
+	 */
+	private void setComponentAction() {
+		jbtOk.addActionListener(this);
+		jbtCancel.addActionListener(this);
+		jcboDepart.addActionListener(this);
 	}
 }

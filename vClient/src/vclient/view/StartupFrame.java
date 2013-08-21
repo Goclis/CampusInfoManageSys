@@ -1,5 +1,7 @@
 package vclient.view;
 
+import goclis.beans.Message;
+
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -18,12 +20,15 @@ import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SwingConstants;
 
+import vclient.srv.ClientSrvHelper;
+
 /**
  * 启动程序的界面设计
  * @author goclis
  *
  */
-public class StartupFrame extends JFrame implements ActionListener{
+public class StartupFrame extends JFrame 
+		implements ActionListener {
 	// 用户名与密码
 	private JLabel jlbUsername = new JLabel("用户名");
 	private JLabel jlbPassword = new JLabel("密码");
@@ -39,15 +44,40 @@ public class StartupFrame extends JFrame implements ActionListener{
 	private JButton jbtLogin = new JButton("登录");
 	private JButton jbtRegister = new JButton("注册");
 	
-	// 与服务器的连接
-	private Socket socket;
-	private String host = "localhost";
-	private int port = 8000;
+	// 保存ClientSrvHelper进行服务
+	private ClientSrvHelper clientSrv;
 	
 	/**
-	 * 初始化界面
+	 * 初始化
 	 */
 	public StartupFrame() {		
+		clientSrv = new ClientSrvHelper();
+		initComponents();
+		setProperties();
+		setComponentAction();
+	}
+
+	/**
+	 * 为控件添加响应
+	 */
+	private void setComponentAction() {
+		jbtLogin.addActionListener(this);
+		jbtRegister.addActionListener(this);
+	}
+	
+	/**
+	 * 设置框架属性
+	 */
+	private void setProperties() {
+		this.setVisible(true);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.pack();
+	}
+	
+	/**
+	 * 初始化控件并布局
+	 */
+	private void initComponents() {
 		this.setLayout(new FlowLayout());
 		this.add(jlbUsername);
 		this.add(jtfName);
@@ -62,26 +92,6 @@ public class StartupFrame extends JFrame implements ActionListener{
 		this.add(jchkManager);
 		this.add(jbtLogin);
 		this.add(jbtRegister);
-		
-		this.setVisible(true);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.pack();
-		
-		jbtLogin.addActionListener(this);
-		jbtRegister.addActionListener(this);
-		
-		connectToServer();
-	}
-	
-	/**
-	 * 通过Socket连接服务器
-	 */
-	private void connectToServer() {
-		try {
-			socket = new Socket(host, port);
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
 	}
 
 	public static void main(String[] args) {
@@ -91,9 +101,10 @@ public class StartupFrame extends JFrame implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == jbtLogin) { // 点击登录
-			System.out.println("Login");
+			// System.out.println("Login");
+			clientSrv.login();
 		} else if (e.getSource() == jbtRegister) { // 点击注册
-			JFrame frame = new RegisterFrame(socket); // 传递socket以便进行注册验证
+			JFrame frame = new RegisterFrame(clientSrv); // 传递socket以便进行注册验证
 			frame.setTitle("注册");
 			frame.setVisible(true);
 			frame.pack();

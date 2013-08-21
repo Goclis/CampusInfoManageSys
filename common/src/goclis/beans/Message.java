@@ -5,8 +5,8 @@ import java.util.Enumeration;
 
 
 public class Message implements Serializable {
-	private Long uid; // 
-	private String name; //
+	private Long uid; // 标识客户端身份
+	private String name; 
 	private Integer type;
 	private String statusCode;
 	private Object data;
@@ -17,7 +17,7 @@ public class Message implements Serializable {
 		name = "t";
 		type = 0;
 		statusCode = "test";
-		data = new Object();
+		data = null;
 		sender = null;
 	}
 	
@@ -43,7 +43,7 @@ public class Message implements Serializable {
 		return statusCode;
 	}
 	public void setStatusCode(String statusCode) {
-		statusCode = statusCode;
+		this.statusCode = statusCode;
 	}
 	public Object getData() {
 		return data;
