@@ -6,21 +6,34 @@ import java.util.Enumeration;
 
 public class Message implements Serializable {
 	private Long uid; // 标识客户端身份
-	private String name; 
+	private String name; // TODO: 考虑删除
 	private Integer type;
-	private String statusCode;
+	private Integer statusCode;
 	private Object data;
 	private Object sender;
 	
 	public Message() {
 		uid = 111111111111111111L;
-		name = "t";
-		type = 0;
-		statusCode = "test";
+		name = null;
+		type = MessageType.EMPTY;
+		statusCode = MessageStatusCode.EMPTY;
 		data = null;
 		sender = null;
 	}
 	
+	/**
+	 * 创建用于登录某个user的Message
+	 * @param user
+	 * @return
+	 */
+	public static Message loginMessage(User user) {
+		Message msg = new Message();
+		msg.setType(MessageType.USER_LOGIN);
+		msg.setData(user);
+		return msg;
+	}
+	
+	// Setters and Getters
 	public Long getUid() {
 		return uid;
 	}
@@ -39,10 +52,10 @@ public class Message implements Serializable {
 	public void setType(Integer type) {
 		this.type = type;
 	}
-	public String getStatusCode() {
+	public Integer getStatusCode() {
 		return statusCode;
 	}
-	public void setStatusCode(String statusCode) {
+	public void setStatusCode(Integer statusCode) {
 		this.statusCode = statusCode;
 	}
 	public Object getData() {

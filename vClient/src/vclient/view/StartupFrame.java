@@ -1,6 +1,7 @@
 package vclient.view;
 
 import goclis.beans.Message;
+import goclis.beans.User;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -16,6 +17,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SwingConstants;
@@ -32,8 +34,8 @@ public class StartupFrame extends JFrame
 	// 用户名与密码
 	private JLabel jlbUsername = new JLabel("用户名");
 	private JLabel jlbPassword = new JLabel("密码");
-	private JTextField jtfName = new JTextField(10);
-	private JTextField jtfPwd = new JTextField(10);
+	private JTextField jtfId = new JTextField(10);
+	private JPasswordField jpfPwd = new JPasswordField();
 	
 	// 登录的身份
 	private JCheckBox jchkStudent = new JCheckBox("学生");
@@ -80,9 +82,9 @@ public class StartupFrame extends JFrame
 	private void initComponents() {
 		this.setLayout(new FlowLayout());
 		this.add(jlbUsername);
-		this.add(jtfName);
+		this.add(jtfId);
 		this.add(jlbPassword);
-		this.add(jtfPwd);
+		this.add(jpfPwd);
 		ButtonGroup group = new ButtonGroup();
 		group.add(jchkStudent);
 		group.add(jchkTeacher);
@@ -101,8 +103,7 @@ public class StartupFrame extends JFrame
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == jbtLogin) { // 点击登录
-			// System.out.println("Login");
-			clientSrv.login();
+			doLogin();
 		} else if (e.getSource() == jbtRegister) { // 点击注册
 			JFrame frame = new RegisterFrame(clientSrv); // 传递socket以便进行注册验证
 			frame.setTitle("注册");
@@ -111,6 +112,29 @@ public class StartupFrame extends JFrame
 			frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		} else {
 			System.out.println(e.getSource());
+		}
+	}
+	
+	/**
+	 * 处理登录
+	 */
+	private void doLogin() {
+		// 从输入框获得登录的信息
+		String userId = jtfId.getText().trim(); // 用户名
+		String pwd = jpfPwd.getText().trim(); // 密码
+		
+		// TODO: 在客户端验证输入
+		// ...
+		
+		// 创建User并发送登录请求
+		User user = new User(userId, pwd);
+		user = clientSrv.login(user);
+		
+		// 处理登录结果
+		if (user == null) {
+			System.out.println("登录失败");
+		} else {
+			System.out.println("登录成功");
 		}
 	}
 }

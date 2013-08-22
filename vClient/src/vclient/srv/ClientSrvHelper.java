@@ -1,6 +1,8 @@
 package vclient.srv;
 
 import goclis.beans.Message;
+import goclis.beans.MessageStatusCode;
+import goclis.beans.MessageType;
 import goclis.beans.User;
 
 import java.io.IOException;
@@ -63,18 +65,28 @@ public class ClientSrvHelper {
 	
 	/**
 	 * 处理登录
+	 * 如果登录成功，返回数据域被填充完成的User，否则，返回null表示登录失败
+	 * @return User
 	 */
-	public void login() {
-		Message msg = new Message();
-		msg.setName("登录");
+	public User login(User user) {
+		// 创建登录请求的Message
+		Message msgLogin = Message.loginMessage(user);
 		
 		try {
+			// 将请求发送到服务器
 			toServer = new ObjectOutputStream(socket.getOutputStream());
-			toServer.writeObject(msg);
+			toServer.writeObject(msgLogin);
 			
+			// 从服务器取回结果
 			fromServer = new ObjectInputStream(socket.getInputStream());
-			Message rt = (Message) fromServer.readObject();
-			System.out.println(rt.getName());
+			Message msgBack = (Message) fromServer.readObject();
+			
+			return (User) msgBack.getData();
+			//System.out.println(msgBack.getType() + " " + msgBack.getStatusCode());
+			/*if (msgBack.getType() == MessageType.USER_LOGIN
+					&& msgBack.getStatusCode() == MessageStatusCode.SUCCESS) {
+				System.out.println("登录成功");
+			}*/
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -82,5 +94,7 @@ public class ClientSrvHelper {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		return null; // 以防异常
 	}
 }
