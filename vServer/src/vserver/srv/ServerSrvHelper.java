@@ -34,13 +34,16 @@ public class ServerSrvHelper implements Runnable {
 	public void run() {
 		while (true) {
 			try {
+				// 从客户端获得Message
 				fromClient = new ObjectInputStream(socket.getInputStream());
 				Message msg = ObjectTransformer.getMessage(fromClient.readObject());
 				// System.out.println(msg.getName());
 				
+				// 将反馈发回客户端
 				Message msgRet = dealMessage(msg);
 				toClient = new ObjectOutputStream(socket.getOutputStream());
 				//msgRet.setName("反馈");
+				System.out.println(msgRet.getData() == null);
 				toClient.writeObject(msgRet);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
@@ -52,10 +55,16 @@ public class ServerSrvHelper implements Runnable {
 			
 		}
 	}
-
+	
+	/**
+	 * 处理接受到的Message并返回相应的反馈Message
+	 * @param msg
+	 * @return
+	 */
 	private Message dealMessage(Message msg) {
 		Integer type = msg.getType();
 		
+		// TODO: 可以考虑封装if...else...块中的某些行为
 		if (type.equals(MessageType.USER_LOGIN)) { // 登录
 			//Object user = msg.getData();
 			User user = ObjectTransformer.getUser(msg.getData());
@@ -65,6 +74,8 @@ public class ServerSrvHelper implements Runnable {
 			}
 			
 			// TODO: 校验数据库中的User
+			// 成功则返回登录成功Message，并更新状态
+			// 失败则返回登录失败Message
 			// ...
 			
 			// TODO: 此处随意返回一个Message用于测试
@@ -74,10 +85,27 @@ public class ServerSrvHelper implements Runnable {
 			msgRt.setStatusCode(MessageStatusCode.SUCCESS); // 登录成功
 			msgRt.setData(user); // TODO: User需要数据库响应数据的填充
 			return msgRt;
+		} else if (type.equals(MessageType.USER_REGISTER)) { // 注册
+			User user = ObjectTransformer.getUser(msg.getData());
+			if (user == null) {
+				// TODO: 返回注册失败的Message
+				// return ...
+			}
+			
+			// TODO: 校验数据库中是否已存在此用户，否则添加
+			// 添加成功返回注册成功Message
+			// 添加失败返回注册失败Message
+			// ...
+			
+			// TODO: 此处随意返回提供测试
+			System.out.println("注册");
+			Message msgRt = new Message();
+			msgRt.setType(MessageType.USER_REGISTER);
+			msgRt.setStatusCode(MessageStatusCode.SUCCESS);
+			msgRt.setData(user);
+			return msgRt;
 		}
-		Message msgRt = new Message();
-		msgRt.setType(MessageType.USER_LOGIN);
-		msgRt.setStatusCode(MessageStatusCode.FAILED); // 登录成功
-		return msgRt;
+		
+		return null;
 	}
 }

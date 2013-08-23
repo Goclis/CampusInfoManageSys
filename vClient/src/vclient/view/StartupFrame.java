@@ -80,6 +80,8 @@ public class StartupFrame extends JFrame
 	 * 初始化控件并布局
 	 */
 	private void initComponents() {
+		// TODO: 调整美化布局
+		
 		this.setLayout(new FlowLayout());
 		this.add(jlbUsername);
 		this.add(jtfId);
@@ -105,16 +107,25 @@ public class StartupFrame extends JFrame
 		if (e.getSource() == jbtLogin) { // 点击登录
 			doLogin();
 		} else if (e.getSource() == jbtRegister) { // 点击注册
-			JFrame frame = new RegisterFrame(clientSrv); // 传递socket以便进行注册验证
-			frame.setTitle("注册");
-			frame.setVisible(true);
-			frame.pack();
-			frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			doRegister();
 		} else {
 			System.out.println(e.getSource());
 		}
 	}
 	
+	/**
+	 * 处理注册
+	 */
+	private void doRegister() {
+		JFrame frame = new RegisterFrame(clientSrv); // 传递ServiceHelper
+		frame.setTitle("注册");
+		frame.setVisible(true);
+		
+		// TODO: 调整美化布局
+		frame.pack();
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+	}
+
 	/**
 	 * 处理登录
 	 */
@@ -131,6 +142,7 @@ public class StartupFrame extends JFrame
 		user = clientSrv.login(user);
 		
 		// 处理登录结果
+		// TODO: 反馈
 		if (user == null) {
 			System.out.println("登录失败");
 		} else {

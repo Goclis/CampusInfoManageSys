@@ -36,21 +36,23 @@ public class ClientSrvHelper {
 	 * @return
 	 */
 	public User register(User user) {
-		Message regMsg = new Message();
-		regMsg.setName("test");
-		regMsg.setData(user);
-		regMsg.setType(1); // 1--注册
-		try {			
+		Message regMsg = Message.registerMessage(user); // 封装登录请求Message
+		try {
+			// 发送请求至服务器
 			toServer = new ObjectOutputStream(socket.getOutputStream());
 			toServer.writeObject(regMsg);
 			toServer.flush();
 			
+			// 从服务器取回反馈
 			fromServer = new ObjectInputStream(socket.getInputStream());
 			Object obj = fromServer.readObject();
 			Message msg = ObjectTransformer.getMessage(obj);
-			System.out.println(msg.getStatusCode());
+			// System.out.println(msg.getStatusCode());
 			
-			// System.out.println("Write Message");
+			
+			User userRt = ObjectTransformer.getUser(msg.getData());
+			System.out.println(userRt == null);
+			return userRt;
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -58,7 +60,8 @@ public class ClientSrvHelper {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
+		
+		return null; // 以防异常
 	}
 	
 	/**

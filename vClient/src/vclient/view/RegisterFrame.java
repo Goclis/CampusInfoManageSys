@@ -74,6 +74,8 @@ public class RegisterFrame extends JFrame
 	public RegisterFrame(ClientSrvHelper clientSrv) {
 		this.clientSrv = clientSrv;
 		initComponents();
+		setProperties();
+		setComponentAction();
 	}
 
 	/**
@@ -98,17 +100,24 @@ public class RegisterFrame extends JFrame
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == jbtOk) {
-			// TODO: 做验证
-			User user = getUserInfo();
-			System.out.println(user.getId() + " " + user.getPassword() + " "
-					+ user.getSex() + " " + user.getName() + user.getIdNum() 
-					+ user.getDepartment() + " " + user.getMajor() + user.getIdentity());
+		if (e.getSource() == jbtOk) { // 确认注册
+			// TODO: 做客户端的验证
+			// ...
+			
+			// 从表单中取得并封装要注册的用户数据
+			User user = getUserToRegister();
 			user = clientSrv.register(user);
-		} else if (e.getSource() == jbtCancel) {
+			
+			// 根据返回的结果给出反馈
+			// TODO: 反馈
+			if (user == null) {
+				System.out.println("注册失败");
+			} else {
+				System.out.println("注册成功");
+			}
+		} else if (e.getSource() == jbtCancel) { // 取消注册
 			this.dispose();
 		} else if (e.getSource() == jcboDepart) { // 院系变化，变化可选专业
-			// System.out.println(jcboDepart.getSelectedIndex());
 			jcboMajor.removeAllItems();
 			String[] majors = getMajors();
 			for (int i = 0; i < majors.length; i++) {
@@ -121,7 +130,7 @@ public class RegisterFrame extends JFrame
 	 * 通过注册表单中的信息生成User并返回
 	 * @return
 	 */
-	private User getUserInfo() {
+	private User getUserToRegister() {
 		User user = new User();
 		user.setId(jtfId.getText());
 		user.setPassword(jpfPwd.getText());

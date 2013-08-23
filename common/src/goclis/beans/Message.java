@@ -24,18 +24,6 @@ public class Message implements Serializable {
 		sender = null;
 	}
 	
-	/**
-	 * 创建用于登录某个user的Message
-	 * @param user
-	 * @return
-	 */
-	public static Message loginMessage(User user) {
-		Message msg = new Message();
-		msg.setType(MessageType.USER_LOGIN);
-		msg.setData(user);
-		return msg;
-	}
-	
 	// Setters and Getters
 	public Long getUid() {
 		return uid;
@@ -74,5 +62,26 @@ public class Message implements Serializable {
 		this.sender = sender;
 	}
 	
+	/**
+	 * 创建用于注册某个user的Message
+	 * @return
+	 */
+	public static Message registerMessage(User user) {
+		Message msg = new Message();
+		msg.setType(MessageType.USER_REGISTER);
+		msg.setData(user);
+		return msg;
+	}
 	
+	/**
+	 * 创建用于登录某个user的Message
+	 * @param user
+	 * @return
+	 */
+	public static Message loginMessage(User user) {
+		Message msg = new Message();
+		msg.setType(MessageType.USER_LOGIN);
+		msg.setData(user);
+		return msg;
+	}
 }
