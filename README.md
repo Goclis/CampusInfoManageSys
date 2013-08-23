@@ -32,8 +32,7 @@ public User login(User user) {
 ```
 
 ###服务器端：
-	服务器端为每个Socket都建立一个线程用于处理，线程主要负责持续的监听客户端发来的Message，并根据Message的某些域的值来进行操作
-并给予反馈（即朝客户端发Message）
+服务器端为每个Socket都建立一个线程用于处理，线程主要负责持续的监听客户端发来的Message，并根据Message的某些域的值来进行操作并给予反馈（即朝客户端发Message）
 
 
 其余可见代码
