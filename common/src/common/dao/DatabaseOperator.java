@@ -43,6 +43,10 @@ public class DatabaseOperator {
 			if (user.getPassword().equals(rs.getString(2))
 					&& user.getIdentity().equals(rs.getString(5))) {
 				// TODO: 更新用户状态（登录，离线）
+				String sqlUpdate = "UPDATE ci_user SET status = 'online' WHERE id = '"
+						+ user.getId() + "'"; 
+				Statement connStat = conn.createStatement();
+				connStat.executeUpdate(sqlUpdate);
 				return true;
 			} else {
 				return false;
