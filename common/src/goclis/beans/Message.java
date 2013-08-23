@@ -1,5 +1,8 @@
 package goclis.beans;
 
+import goclis.util.MessageStatusCode;
+import goclis.util.MessageType;
+
 import java.io.Serializable;
 import java.util.Enumeration;
 

@@ -1,9 +1,8 @@
 package vclient.srv;
 
 import goclis.beans.Message;
-import goclis.beans.MessageStatusCode;
-import goclis.beans.MessageType;
 import goclis.beans.User;
+import goclis.util.ObjectTransformer;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -48,10 +47,9 @@ public class ClientSrvHelper {
 			
 			fromServer = new ObjectInputStream(socket.getInputStream());
 			Object obj = fromServer.readObject();
-			if (obj != null) {
-				Message msg = (Message) obj;
-				System.out.println(msg.getStatusCode());
-			}
+			Message msg = ObjectTransformer.getMessage(obj);
+			System.out.println(msg.getStatusCode());
+			
 			// System.out.println("Write Message");
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -79,9 +77,9 @@ public class ClientSrvHelper {
 			
 			// 从服务器取回结果
 			fromServer = new ObjectInputStream(socket.getInputStream());
-			Message msgBack = (Message) fromServer.readObject();
+			Message msgBack = ObjectTransformer.getMessage(fromServer.readObject());
 			
-			return (User) msgBack.getData();
+			return ObjectTransformer.getUser(msgBack.getData());
 			//System.out.println(msgBack.getType() + " " + msgBack.getStatusCode());
 			/*if (msgBack.getType() == MessageType.USER_LOGIN
 					&& msgBack.getStatusCode() == MessageStatusCode.SUCCESS) {

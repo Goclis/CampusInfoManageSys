@@ -1,9 +1,10 @@
 package vserver.srv;
 
 import goclis.beans.Message;
-import goclis.beans.MessageStatusCode;
-import goclis.beans.MessageType;
 import goclis.beans.User;
+import goclis.util.MessageStatusCode;
+import goclis.util.MessageType;
+import goclis.util.ObjectTransformer;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -34,9 +35,8 @@ public class ServerSrvHelper implements Runnable {
 		while (true) {
 			try {
 				fromClient = new ObjectInputStream(socket.getInputStream());
-				Message msg = (Message) fromClient.readObject();
+				Message msg = ObjectTransformer.getMessage(fromClient.readObject());
 				// System.out.println(msg.getName());
-				System.out.println(msg == null);
 				
 				Message msgRet = dealMessage(msg);
 				toClient = new ObjectOutputStream(socket.getOutputStream());
@@ -57,13 +57,13 @@ public class ServerSrvHelper implements Runnable {
 		Integer type = msg.getType();
 		
 		if (type.equals(MessageType.USER_LOGIN)) { // 登录
-			Object user = msg.getData();
-			if (user != null) {
-				user = (User) user;
-			} else {
+			//Object user = msg.getData();
+			User user = ObjectTransformer.getUser(msg.getData());
+			if (user == null) {
 				// TODO: 返回登录失败的Message
 				// return ...
 			}
+			
 			// TODO: 校验数据库中的User
 			// ...
 			
