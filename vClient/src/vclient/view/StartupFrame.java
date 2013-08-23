@@ -2,8 +2,13 @@ package vclient.view;
 
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -20,6 +25,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SwingConstants;
+import javax.swing.border.LineBorder;
 
 import common.beans.Message;
 import common.beans.User;
@@ -43,9 +49,6 @@ public class StartupFrame extends JFrame
 	private JCheckBox jchkStudent = new JCheckBox("学生");
 	private JCheckBox jchkTeacher = new JCheckBox("老师");
 	private JCheckBox jchkManager = new JCheckBox("管理员");
-	
-	// TODO: 缺少选择身份登录
-	// ...
 	
 	// 执行的操作
 	private JButton jbtLogin = new JButton("登录");
@@ -76,9 +79,15 @@ public class StartupFrame extends JFrame
 	 * 设置框架属性
 	 */
 	private void setProperties() {
-		this.setVisible(true);
+		this.setSize(350, 285);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.pack();
+		
+		// 居中显示
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		Dimension frameSize = this.getSize();
+		this.setLocation((screenSize.width - frameSize.width) / 2,
+				(screenSize.height - frameSize.width) / 2);
+		this.setVisible(true);
 	}
 	
 	/**
@@ -87,21 +96,34 @@ public class StartupFrame extends JFrame
 	private void initComponents() {
 		// TODO: 调整美化布局
 		
-		this.setLayout(new FlowLayout());
-		this.add(jlbUsername);
-		this.add(jtfId);
-		this.add(jlbPassword);
-		this.add(jpfPwd);
-		ButtonGroup group = new ButtonGroup();
-		group.add(jchkStudent);
-		group.add(jchkTeacher);
-		group.add(jchkManager);
-		jchkStudent.setSelected(true);
-		this.add(jchkStudent);
-		this.add(jchkTeacher);
-		this.add(jchkManager);
-		this.add(jbtLogin);
-		this.add(jbtRegister);
+		JLabel jlbWelcome = new JLabel("Welcome");
+		jlbWelcome.setFont(new Font(jlbWelcome.getFont().getFamily(), Font.BOLD, 25));
+		jlbWelcome.setHorizontalAlignment(JLabel.CENTER);
+		this.setLayout(null);
+		this.add(jlbWelcome);
+		jlbWelcome.setBounds(0, 0, 350, 50);
+		
+		JPanel jpMain = new JPanel(null);
+		jpMain.add(jlbUsername);
+		jlbUsername.setBounds(50, 0, 250, 20);
+		jpMain.add(jtfId);
+		jtfId.setBounds(50, 22, 250, 30);
+		jpMain.add(jlbPassword);
+		jlbPassword.setBounds(50, 60, 250, 20);
+		jpMain.add(jpfPwd);
+		jpfPwd.setBounds(50, 80, 250, 30);
+		//jpMain.setBorder(new LineBorder(Color.black));
+		this.add(jpMain);
+		jpMain.setBounds(0, 50, 350, 120);
+		
+		JPanel jpBtns = new JPanel(null);
+		jpBtns.add(jbtLogin);
+		jbtLogin.setBounds(50, 5, 100, 25);
+		jpBtns.add(jbtRegister);
+		jbtRegister.setBounds(199, 5, 100, 25);
+		this.add(jpBtns);
+		//jpBtns.setBorder(new LineBorder(Color.black));
+		jpBtns.setBounds(0, 180, 350, 86);
 	}
 
 	public static void main(String[] args) {
