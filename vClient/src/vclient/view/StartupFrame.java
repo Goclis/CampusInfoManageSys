@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -147,11 +148,12 @@ public class StartupFrame extends JFrame
 		user = clientSrv.login(user);
 		
 		// 处理登录结果
-		// TODO: 反馈
+		// TODO: 优化反馈信息
 		if (user == null) {
-			System.out.println("登录失败");
+			JOptionPane.showMessageDialog(this, "已登录或用户名密码错误");
 		} else {
 			System.out.println("登录成功");
+			// TODO: 启动主界面
 		}
 	}
 }
