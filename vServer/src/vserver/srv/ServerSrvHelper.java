@@ -68,36 +68,32 @@ public class ServerSrvHelper implements Runnable {
 		Integer type = msg.getType();
 		
 		// TODO: 可以考虑封装if...else...块中的某些行为
+		// TODO: 考虑设置返回的Message的状态域，以标识更多的失败原因，比如服务器端问题（数据库错误）
 		if (type.equals(MessageType.USER_LOGIN)) { // 登录
-			//Object user = msg.getData();
 			User user = ObjectTransformer.getUser(msg.getData());
 			if (user == null) {
 				// TODO: 返回登录失败的Message
 				// return ...
 			}
 			
-			// TODO: 校验数据库中的User
-			// 成功则返回登录成功Message，并更新状态
-			// 失败则返回登录失败Message
-			boolean loginRs = false;
+			// 校验数据库中的User
+			boolean loginRs = false; // 校验结果
 			try {
 				loginRs = DatabaseOperator.login(user);
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				System.out.println("Driver Error");
+				System.out.println("Driver Error during logining in");
 				e.printStackTrace();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				System.out.println("Database Access Error");
+				System.out.println("Database Access Error during logining in");
 				e.printStackTrace();
 			}
 			
-			System.out.println("登录" + loginRs);
+			// 反馈Message
 			Message msgRt = new Message();
 			msgRt.setType(MessageType.USER_LOGIN);
 			if (loginRs) {
 				msgRt.setStatusCode(MessageStatusCode.SUCCESS); // 登录成功
-				msgRt.setData(user); // TODO: User需要数据库响应数据的填充
+				msgRt.setData(user); // 将已填充数据的user封装进Message
 			} else {
 				msgRt.setStatusCode(MessageStatusCode.FAILED); // 登录失败
 				msgRt.setData(null); 
@@ -112,16 +108,27 @@ public class ServerSrvHelper implements Runnable {
 			}
 			
 			// TODO: 校验数据库中是否已存在此用户，否则添加
-			// 添加成功返回注册成功Message
-			// 添加失败返回注册失败Message
-			// ...
+			boolean registerRs = false;
+			try {
+				registerRs = DatabaseOperator.register(user);
+			} catch (ClassNotFoundException e) {
+				System.out.println("Driver Error during registering");
+				e.printStackTrace();
+			} catch (SQLException e) {
+				System.out.println("Database Access Error during registering");
+				e.printStackTrace();
+			}
 			
-			// TODO: 此处随意返回提供测试
-			System.out.println("注册");
 			Message msgRt = new Message();
 			msgRt.setType(MessageType.USER_REGISTER);
-			msgRt.setStatusCode(MessageStatusCode.SUCCESS);
-			msgRt.setData(user);
+			if (registerRs) {
+				msgRt.setStatusCode(MessageStatusCode.SUCCESS);
+				msgRt.setData(user);
+			} else {
+				msgRt.setStatusCode(MessageStatusCode.FAILED);
+				msgRt.setData(null);
+			}
+			
 			return msgRt;
 		}
 		

@@ -50,9 +50,10 @@ public class ClientSrvHelper {
 			Message msg = ObjectTransformer.getMessage(obj);
 			// System.out.println(msg.getStatusCode());
 			
-			
+			// TODO: 根据得到的Message中的状态域进行不同的提示
 			User userRt = ObjectTransformer.getUser(msg.getData());
-			System.out.println(userRt == null);
+			
+			
 			return userRt;
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block

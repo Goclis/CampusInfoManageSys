@@ -12,6 +12,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -110,11 +111,12 @@ public class RegisterFrame extends JFrame
 			user = clientSrv.register(user);
 			
 			// 根据返回的结果给出反馈
-			// TODO: 反馈
+			// TODO: 优化反馈的界面
 			if (user == null) {
-				System.out.println("注册失败");
+				JOptionPane.showMessageDialog(this, "注册失败, 用户已注册");
 			} else {
-				System.out.println("注册成功");
+				JOptionPane.showMessageDialog(this, "注册成功");
+				this.dispose();
 			}
 		} else if (e.getSource() == jbtCancel) { // 取消注册
 			this.dispose();

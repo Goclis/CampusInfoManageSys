@@ -1,3 +1,2 @@
 // TODO: 实现连接数据库的公共类
-// TODO: 实现User注册的数据库验证（ServerSrvHelper.java）
-// TODO: 
+// TODO: 优化客户端在调用远程时的线程问题，即防止因为连接问题导致Swing卡死
