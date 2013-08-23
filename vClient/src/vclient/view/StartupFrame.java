@@ -42,8 +42,8 @@ public class StartupFrame extends JFrame
 	// 用户名与密码
 	private JLabel jlbUsername = new JLabel("用户名");
 	private JLabel jlbPassword = new JLabel("密码");
-	private JTextField jtfId = new JTextField(10);
-	private JPasswordField jpfPwd = new JPasswordField(10);
+	private JTextField jtfId = new JTextField();
+	private JPasswordField jpfPwd = new JPasswordField();
 	
 	// 登录的身份
 	private JCheckBox jchkStudent = new JCheckBox("学生");
