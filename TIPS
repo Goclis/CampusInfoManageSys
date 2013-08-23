@@ -1,0 +1,24 @@
+// 此文件属于开发中遇到的一些淡腾的事情，供分享...
+
+1. 注意区分primitive类与wrapper类
+比如:
+int为primitive类，而相应的wrapper类为Integer
+一般我们有如下语句:
+int i1 = 1;
+int i2 = 1;
+
+System.out.println(i1 == i2); // 此时输出结果为true
+
+而如下语句:
+Integer i1 = 1;
+Integer i2 = 1;
+
+System.out.println(i1 == i2); // 此时输出结果为false
+System.out.println(i1.equals(i2)); // true
+
+因为wrapper类型使用==时，比较的是ID，即判断它们是否为同一对象的引用，
+而如果想比较值，应该使用它们自身已实现了的 equals 方法。
+
+
+
+
