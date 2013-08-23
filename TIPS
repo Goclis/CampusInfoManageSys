@@ -19,6 +19,6 @@ System.out.println(i1.equals(i2)); // true
 因为wrapper类型使用==时，比较的是ID，即判断它们是否为同一对象的引用，
 而如果想比较值，应该使用它们自身已实现了的 equals 方法。
 
-
+尤其注意String也存在这个问题，所以在不知道是啥类型的时候，可以使用Eclispse自带的提醒功能，如果看到有equals这个方法，就用它吧...
 
 

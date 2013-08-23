@@ -1,7 +1,7 @@
 package goclis.util;
 
-import goclis.beans.Message;
-import goclis.beans.User;
+import common.beans.Message;
+import common.beans.User;
 
 /**
  * 用来将Object转化为适当的类型

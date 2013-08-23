@@ -1,7 +1,5 @@
 package vclient.view;
 
-import goclis.beans.Message;
-import goclis.beans.User;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -22,6 +20,9 @@ import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SwingConstants;
 
+import common.beans.Message;
+import common.beans.User;
+
 import vclient.srv.ClientSrvHelper;
 
 /**
@@ -35,12 +36,15 @@ public class StartupFrame extends JFrame
 	private JLabel jlbUsername = new JLabel("用户名");
 	private JLabel jlbPassword = new JLabel("密码");
 	private JTextField jtfId = new JTextField(10);
-	private JPasswordField jpfPwd = new JPasswordField();
+	private JPasswordField jpfPwd = new JPasswordField(10);
 	
 	// 登录的身份
 	private JCheckBox jchkStudent = new JCheckBox("学生");
 	private JCheckBox jchkTeacher = new JCheckBox("老师");
 	private JCheckBox jchkManager = new JCheckBox("管理员");
+	
+	// TODO: 缺少选择身份登录
+	// ...
 	
 	// 执行的操作
 	private JButton jbtLogin = new JButton("登录");
@@ -133,12 +137,13 @@ public class StartupFrame extends JFrame
 		// 从输入框获得登录的信息
 		String userId = jtfId.getText().trim(); // 用户名
 		String pwd = jpfPwd.getText().trim(); // 密码
+		String identity = "学生"; // 身份 TODO: 从表单中得到
 		
 		// TODO: 在客户端验证输入
 		// ...
 		
 		// 创建User并发送登录请求
-		User user = new User(userId, pwd);
+		User user = new User(userId, pwd, identity);
 		user = clientSrv.login(user);
 		
 		// 处理登录结果

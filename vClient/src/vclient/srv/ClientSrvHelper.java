@@ -1,7 +1,5 @@
 package vclient.srv;
 
-import goclis.beans.Message;
-import goclis.beans.User;
 import goclis.util.ObjectTransformer;
 
 import java.io.IOException;
@@ -9,6 +7,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
+import common.beans.Message;
+import common.beans.User;
 
 public class ClientSrvHelper {
 	private Socket socket;

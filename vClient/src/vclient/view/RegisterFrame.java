@@ -1,6 +1,5 @@
 package vclient.view;
 
-import goclis.beans.User;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -18,6 +17,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import org.omg.CORBA.ShortSeqHelper;
+
+import common.beans.User;
 
 import vclient.srv.ClientSrvHelper;
 
@@ -134,7 +135,7 @@ public class RegisterFrame extends JFrame
 		User user = new User();
 		user.setId(jtfId.getText());
 		user.setPassword(jpfPwd.getText());
-		user.setIdNum(Integer.valueOf(jtfIdNum.getText()));
+		user.setIdNum(jtfIdNum.getText());
 		user.setName(jtfName.getText());
 		user.setSex(jchkMale.isSelected() ? "男" : "女");
 		user.setDepartment((String) jcboDepart.getSelectedItem());
