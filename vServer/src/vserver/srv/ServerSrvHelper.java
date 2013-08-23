@@ -45,11 +45,9 @@ public class ServerSrvHelper implements Runnable {
 				// 将反馈发回客户端
 				Message msgRet = dealMessage(msg);
 				toClient = new ObjectOutputStream(socket.getOutputStream());
-				//msgRet.setName("反馈");
-				System.out.println(msgRet.getData() == null);
 				toClient.writeObject(msgRet);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				// TODO 处理客户端断开后，如何结束线程
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block

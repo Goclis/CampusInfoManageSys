@@ -96,6 +96,7 @@ public class StartupFrame extends JFrame
 		group.add(jchkStudent);
 		group.add(jchkTeacher);
 		group.add(jchkManager);
+		jchkStudent.setSelected(true);
 		this.add(jchkStudent);
 		this.add(jchkTeacher);
 		this.add(jchkManager);
@@ -138,7 +139,14 @@ public class StartupFrame extends JFrame
 		// 从输入框获得登录的信息
 		String userId = jtfId.getText().trim(); // 用户名
 		String pwd = jpfPwd.getText().trim(); // 密码
-		String identity = "学生"; // 身份 TODO: 从表单中得到
+		String identity = null; // 身份 
+		if (jchkStudent.isSelected()) {
+			identity = "学生";
+		} else if (jchkTeacher.isSelected()) {
+			identity = "老师";
+		} else if (jchkManager.isSelected()) {
+			identity = "管理员";
+		}
 		
 		// TODO: 在客户端验证输入
 		// ...

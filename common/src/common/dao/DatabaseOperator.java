@@ -105,8 +105,6 @@ public class DatabaseOperator {
 				+ " id_num, identity, sex, department, major, status) VALUES "
 				+ "('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
 				uId, uPwd, uName, uIdNum, uIdentity, uSex, uDepart, uMajor, uStatus);
-		System.out.println(sqlCreateUser);
-		
 		Statement connStat = conn.createStatement();
 		connStat.executeUpdate(sqlCreateUser);
 		

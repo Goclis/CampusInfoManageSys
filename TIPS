@@ -22,3 +22,9 @@ System.out.println(i1.equals(i2)); // true
 尤其注意String也存在这个问题，所以在不知道是啥类型的时候，可以使用Eclispse自带的提醒功能，如果看到有equals这个方法，就用它吧...
 
 
+2. mysql编码改变
+sudo vim /etc/mysql/my.conf
+在[mysqld]下面加上character-set-server=utf8
+然后重启mysql
+sudo ./etc/init.d/mysql restart
+http://www.blogjava.net/zhyiwww/archive/2012/03/01/371055.html
