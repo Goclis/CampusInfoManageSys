@@ -26,7 +26,6 @@ public class ServerSrvHelper implements Runnable {
 	}
 	
 	public ServerSrvHelper() {
-		
 	}
 
 	public ServerSrvHelper(Socket socket) {
@@ -40,7 +39,6 @@ public class ServerSrvHelper implements Runnable {
 				// 从客户端获得Message
 				fromClient = new ObjectInputStream(socket.getInputStream());
 				Message msg = ObjectTransformer.getMessage(fromClient.readObject());
-				// System.out.println(msg.getName());
 				
 				// 将反馈发回客户端
 				Message msgRet = dealMessage(msg);
@@ -51,7 +49,6 @@ public class ServerSrvHelper implements Runnable {
 				e.printStackTrace();
 				break;
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 				break;
 			}

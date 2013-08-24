@@ -38,7 +38,7 @@ import common.beans.User;
 import vclient.srv.ClientSrvHelper;
 
 /**
- * 启动程序的界面设计
+ * 启动程序
  * @author goclis
  *
  */
@@ -183,42 +183,43 @@ public class StartupFrame extends JFrame
 	private void doLogin() {
 		// 从输入框获得登录的信息
 		String userId = jtfId.getText().trim(); // 用户名
-		String pwd = jpfPwd.getText().trim(); // 密码
+		String pwd = String.valueOf(jpfPwd.getPassword()).trim(); // 密码
 		String identity = (String) jcboIdentity.getSelectedItem(); // 身份 
 		
-		// TODO: 在客户端验证输入
-		// ...
-		
-		// 创建User并发送登录请求
-		user = new User(userId, pwd, identity);
-		// TODO: 美化登录Loading界面
-		new Loading(user, this).start(); // Loading界面
-		user = clientSrv.login(user);
-		
-		// 处理登录结果
-		// TODO: 优化反馈信息
-		if (user == null) {
-			JOptionPane.showMessageDialog(this, "已登录或用户名密码错误");
+		// 在客户端验证输入
+		if (userId.isEmpty() || pwd.isEmpty()) {
+			JOptionPane.showMessageDialog(this, "用户名/密码不能为空");
 		} else {
-			System.out.println("登录成功");
-			// TODO: 启动主界面
-			// ...
+			// 创建User并发送登录请求
+			user = new User(userId, pwd, identity);
+			// TODO: 美化登录Loading界面
+			new LoadingThread(user, this).start(); // Loading界面
+			user = clientSrv.login(user);
+			
+			// 处理登录结果
+			// TODO: 优化反馈信息
+			if (user == null) {
+				JOptionPane.showMessageDialog(this, "已登录或用户名密码错误");
+			} else {
+				System.out.println("登录成功");
+				// TODO: 启动主界面
+				// ...
+			}
 		}
 	}
 	
 	/**
 	 * 用于登录时显示[Loading...]效果的线程
 	 * @author goclis
-	 *
 	 */
-	private class Loading extends Thread {
+	private class LoadingThread extends Thread {
 		private User oldUser;
 		private JFrame jcParent;
 		private JFrame jfLoading;
 		private JLabel jlbLoading;
 		private long beginTime;
 	
-		public Loading(User oldUser, StartupFrame startupFrame) {
+		public LoadingThread(User oldUser, StartupFrame startupFrame) {
 			this.oldUser = oldUser;
 			this.jcParent = startupFrame;
 			jfLoading = new JFrame();
@@ -247,8 +248,7 @@ public class StartupFrame extends JFrame
 				}
 			}
 			
-			this.interrupt();
+			this.interrupt(); // 终止Loading线程
 		}
-		
 	}
 }
