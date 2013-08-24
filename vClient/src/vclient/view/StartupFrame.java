@@ -89,7 +89,7 @@ public class StartupFrame extends JFrame
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension frameSize = this.getSize();
 		this.setLocation((screenSize.width - frameSize.width) / 2,
-				(screenSize.height - frameSize.width) / 2);
+				100);
 		this.setVisible(true);
 	}
 	
