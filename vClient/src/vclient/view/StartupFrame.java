@@ -53,9 +53,6 @@ public class StartupFrame extends JFrame
 	// 登录的身份
 	private JComboBox<String> jcboIdentity = new JComboBox<String>(
 			new String[] {"学生", "老师", "管理员"});
-	private JCheckBox jchkStudent = new JCheckBox("学生");
-	private JCheckBox jchkTeacher = new JCheckBox("老师");
-	private JCheckBox jchkManager = new JCheckBox("管理员");
 	
 	// 执行的操作
 	private JButton jbtLogin = new JButton("登录");
@@ -92,8 +89,7 @@ public class StartupFrame extends JFrame
 		// 居中显示
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		Dimension frameSize = this.getSize();
-		this.setLocation((screenSize.width - frameSize.width) / 2,
-				100);
+		this.setLocation((screenSize.width - frameSize.width) / 2, 100);
 		this.setVisible(true);
 	}
 	
@@ -142,6 +138,7 @@ public class StartupFrame extends JFrame
 		jpBody.add(jpMain);
 		jpBody.add(jpBtns);
 		jcboIdentity.setBounds(50, 0, 250, 40);
+		jcboIdentity.setFocusable(false);
 		jpMain.setBounds(0, 55, 350, 110);
 		jpBtns.setBounds(0, 170, 350, 80);
 		
@@ -205,6 +202,7 @@ public class StartupFrame extends JFrame
 		} else {
 			System.out.println("登录成功");
 			// TODO: 启动主界面
+			// ...
 		}
 	}
 	

@@ -49,11 +49,12 @@ public class ServerSrvHelper implements Runnable {
 			} catch (IOException e) {
 				// TODO 处理客户端断开后，如何结束线程
 				e.printStackTrace();
+				break;
 			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				break;
 			}
-			
 		}
 	}
 	
