@@ -13,11 +13,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -57,8 +61,8 @@ public class StartupFrame extends JFrame
 	private JButton jbtLogin = new JButton("登录");
 	private JButton jbtRegister = new JButton("注册");
 	
-	// 保存ClientSrvHelper进行服务
-	private ClientSrvHelper clientSrv;
+	private ClientSrvHelper clientSrv; // 保存ClientSrvHelper进行服务
+	private User user; // 保存登录的用户
 	
 	/**
 	 * 初始化
@@ -183,20 +187,15 @@ public class StartupFrame extends JFrame
 		// 从输入框获得登录的信息
 		String userId = jtfId.getText().trim(); // 用户名
 		String pwd = jpfPwd.getText().trim(); // 密码
-		String identity = null; // 身份 
-		if (jchkStudent.isSelected()) {
-			identity = "学生";
-		} else if (jchkTeacher.isSelected()) {
-			identity = "老师";
-		} else if (jchkManager.isSelected()) {
-			identity = "管理员";
-		}
+		String identity = (String) jcboIdentity.getSelectedItem(); // 身份 
 		
 		// TODO: 在客户端验证输入
 		// ...
 		
 		// 创建User并发送登录请求
-		User user = new User(userId, pwd, identity);
+		user = new User(userId, pwd, identity);
+		// TODO: 美化登录Loading界面
+		new Loading(user, this).start(); // Loading界面
 		user = clientSrv.login(user);
 		
 		// 处理登录结果
@@ -207,5 +206,51 @@ public class StartupFrame extends JFrame
 			System.out.println("登录成功");
 			// TODO: 启动主界面
 		}
+	}
+	
+	/**
+	 * 用于登录时显示[Loading...]效果的线程
+	 * @author goclis
+	 *
+	 */
+	private class Loading extends Thread {
+		private User oldUser;
+		private JFrame jcParent;
+		private JFrame jfLoading;
+		private JLabel jlbLoading;
+		private long beginTime;
+	
+		public Loading(User oldUser, StartupFrame startupFrame) {
+			this.oldUser = oldUser;
+			this.jcParent = startupFrame;
+			jfLoading = new JFrame();
+			jfLoading.add(jlbLoading = new JLabel("加载中"));
+			jlbLoading.setHorizontalAlignment(JLabel.CENTER);
+			jfLoading.setSize(jcParent.getSize());
+			jfLoading.setLocationRelativeTo(jcParent);
+		}
+		
+		@Override
+		public void run() {
+			this.beginTime = new Date().getTime();
+			long endTime;
+			long during;
+			while (true) {
+				endTime = new Date().getTime();
+				during = endTime - beginTime;
+				if (during < 5000
+						&& oldUser == user) { // 依旧是同一个对象，说明未得到新的结果
+					jfLoading.setVisible(true);
+					jcParent.setVisible(false);
+				} else {
+					jcParent.setVisible(true);
+					jfLoading.setVisible(false);
+					break;
+				}
+			}
+			
+			this.interrupt();
+		}
+		
 	}
 }
