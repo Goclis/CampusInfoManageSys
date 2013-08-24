@@ -17,6 +17,7 @@ import java.net.Socket;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -46,6 +47,8 @@ public class StartupFrame extends JFrame
 	private JPasswordField jpfPwd = new JPasswordField();
 	
 	// 登录的身份
+	private JComboBox<String> jcboIdentity = new JComboBox<String>(
+			new String[] {"学生", "老师", "管理员"});
 	private JCheckBox jchkStudent = new JCheckBox("学生");
 	private JCheckBox jchkTeacher = new JCheckBox("老师");
 	private JCheckBox jchkManager = new JCheckBox("管理员");
@@ -79,7 +82,7 @@ public class StartupFrame extends JFrame
 	 * 设置框架属性
 	 */
 	private void setProperties() {
-		this.setSize(350, 285);
+		this.setSize(350, 500);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		// 居中显示
@@ -95,35 +98,54 @@ public class StartupFrame extends JFrame
 	 */
 	private void initComponents() {
 		// TODO: 调整美化布局
-		
 		JLabel jlbWelcome = new JLabel("Welcome");
-		jlbWelcome.setFont(new Font(jlbWelcome.getFont().getFamily(), Font.BOLD, 25));
+		jlbWelcome.setFont(new Font(jlbWelcome.getFont().getFamily(), Font.BOLD, 55));
 		jlbWelcome.setHorizontalAlignment(JLabel.CENTER);
-		this.setLayout(null);
-		this.add(jlbWelcome);
-		jlbWelcome.setBounds(0, 0, 350, 50);
 		
+		// JPanel to hold username
+		JPanel jpUsername = new JPanel(null); 
+		jpUsername.add(jlbUsername);
+		jpUsername.add(jtfId);
+		jlbUsername.setBounds(50, 0, 250, 15);
+		jlbUsername.setFont(new Font(jlbUsername.getFont().getFamily(), Font.BOLD, 10));
+		jtfId.setBounds(50, 15, 250, 30);
+		
+		// JPanel to hold password
+		JPanel jpPassword = new JPanel(null);
+		jpPassword.add(jlbPassword);
+		jpPassword.add(jpfPwd);
+		jlbPassword.setFont(jlbUsername.getFont());
+		jlbPassword.setBounds(50, 0, 250, 15);
+		jpfPwd.setBounds(50, 15, 250, 30);
+		
+		// JPanel to hold username and password
 		JPanel jpMain = new JPanel(null);
-		jpMain.add(jlbUsername);
-		jlbUsername.setBounds(50, 0, 250, 20);
-		jpMain.add(jtfId);
-		jtfId.setBounds(50, 22, 250, 30);
-		jpMain.add(jlbPassword);
-		jlbPassword.setBounds(50, 60, 250, 20);
-		jpMain.add(jpfPwd);
-		jpfPwd.setBounds(50, 80, 250, 30);
-		//jpMain.setBorder(new LineBorder(Color.black));
-		this.add(jpMain);
-		jpMain.setBounds(0, 50, 350, 120);
+		jpMain.add(jpUsername);
+		jpMain.add(jpPassword);
+		jpUsername.setBounds(0, 0, 350, 55);
+		jpPassword.setBounds(0, 55, 350, 55);
 		
+		// JPanel to hold login and register button
 		JPanel jpBtns = new JPanel(null);
 		jpBtns.add(jbtLogin);
-		jbtLogin.setBounds(50, 5, 100, 25);
+		jbtLogin.setBounds(50, 5, 100, 35);
 		jpBtns.add(jbtRegister);
-		jbtRegister.setBounds(199, 5, 100, 25);
-		this.add(jpBtns);
-		//jpBtns.setBorder(new LineBorder(Color.black));
-		jpBtns.setBounds(0, 180, 350, 86);
+		jbtRegister.setBounds(199, 5, 100, 35);
+		
+		// JPanel to hold all components
+		JPanel jpBody = new JPanel(null);
+		jpBody.add(jcboIdentity);
+		jpBody.add(jpMain);
+		jpBody.add(jpBtns);
+		jcboIdentity.setBounds(50, 0, 250, 40);
+		jpMain.setBounds(0, 55, 350, 110);
+		jpBtns.setBounds(0, 170, 350, 80);
+		
+		this.setLayout(null);
+		this.add(jlbWelcome);
+		jlbWelcome.setBounds(0, 50, 350, 50);
+		this.add(jpBody);
+		jpBody.setBounds(0, 150, 350, 350);
 	}
 
 	public static void main(String[] args) {
