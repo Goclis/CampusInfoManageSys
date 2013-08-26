@@ -28,3 +28,9 @@ sudo vim /etc/mysql/my.conf
 然后重启mysql
 sudo ./etc/init.d/mysql restart
 http://www.blogjava.net/zhyiwww/archive/2012/03/01/371055.html
+
+
+
+
+
+

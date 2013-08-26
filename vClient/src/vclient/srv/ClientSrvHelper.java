@@ -77,6 +77,7 @@ public class ClientSrvHelper {
 			// 将请求发送到服务器
 			toServer = new ObjectOutputStream(socket.getOutputStream());
 			toServer.writeObject(msgLogin);
+			toServer.flush();
 			
 			// 从服务器取回结果
 			fromServer = new ObjectInputStream(socket.getInputStream());

@@ -61,7 +61,7 @@ public class ServerSrvHelper implements Runnable {
 	 * @return
 	 */
 	private Message dealMessage(Message msg) {
-		Integer type = msg.getType();
+		Integer type = msg.getType(); 
 		
 		// TODO: 可以考虑封装if...else...块中的某些行为
 		// TODO: 考虑设置返回的Message的状态域，以标识更多的失败原因，比如服务器端问题（数据库错误）
