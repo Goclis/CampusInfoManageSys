@@ -9,7 +9,6 @@ import java.util.Enumeration;
 
 public class Message implements Serializable {
 	private Long uid; // 标识客户端身份
-	private String name; // TODO: 考虑删除
 	private Integer type;
 	private Integer statusCode;
 	private Object data;
@@ -17,25 +16,36 @@ public class Message implements Serializable {
 	
 	public Message() {
 		uid = 111111111111111111L;
-		name = null;
 		type = MessageType.EMPTY;
 		statusCode = MessageStatusCode.EMPTY;
 		data = null;
 		sender = null;
 	}
 	
+	/**
+	 * 根据所给Message类型构造
+	 * @param type
+	 */
+	public Message(Integer type) {
+		this.type = type;
+		this.statusCode = MessageStatusCode.EMPTY;
+		this.data = null;
+		this.sender = null;
+	}
+	
+	public Message(Integer type, Integer status) {
+		this.type = type;
+		this.statusCode = status;
+		this.data = null;
+		this.sender = null;
+	}
+
 	// Setters and Getters
 	public Long getUid() {
 		return uid;
 	}
 	public void setUid(Long uid) {
 		this.uid = uid;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
 	}
 	public Integer getType() {
 		return type;
@@ -60,28 +70,5 @@ public class Message implements Serializable {
 	}
 	public void setSender(Object sender) {
 		this.sender = sender;
-	}
-	
-	/**
-	 * 创建用于注册某个user的Message
-	 * @return
-	 */
-	public static Message registerMessage(User user) {
-		Message msg = new Message();
-		msg.setType(MessageType.USER_REGISTER);
-		msg.setData(user);
-		return msg;
-	}
-	
-	/**
-	 * 创建用于登录某个user的Message
-	 * @param user
-	 * @return
-	 */
-	public static Message loginMessage(User user) {
-		Message msg = new Message();
-		msg.setType(MessageType.USER_LOGIN);
-		msg.setData(user);
-		return msg;
 	}
 }

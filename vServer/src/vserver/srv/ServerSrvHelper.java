@@ -20,21 +20,24 @@ public class ServerSrvHelper implements Runnable {
 	private Socket socket;
 	private ObjectInputStream fromClient;
 	private ObjectOutputStream toClient;
+	private boolean closed;
 	
 	public static void main(String[] args) {
 		new ServerSrvHelper();
 	}
 	
 	public ServerSrvHelper() {
+		this(null);
 	}
 
 	public ServerSrvHelper(Socket socket) {
 		this.socket = socket;
+		this.closed = false;
 	}
 
 	@Override
 	public void run() {
-		while (true) {
+		while (!closed) {
 			try {
 				// 从客户端获得Message
 				fromClient = new ObjectInputStream(socket.getInputStream());
@@ -44,13 +47,14 @@ public class ServerSrvHelper implements Runnable {
 				Message msgRet = dealMessage(msg);
 				toClient = new ObjectOutputStream(socket.getOutputStream());
 				toClient.writeObject(msgRet);
+				toClient.flush();
 			} catch (IOException e) {
 				// TODO 处理客户端断开后，如何结束线程
 				e.printStackTrace();
-				break;
+				this.close();
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
-				break;
+				this.close();
 			}
 		}
 	}
@@ -68,8 +72,10 @@ public class ServerSrvHelper implements Runnable {
 		if (type.equals(MessageType.USER_LOGIN)) { // 登录
 			User user = ObjectTransformer.getUser(msg.getData());
 			if (user == null) {
-				// TODO: 返回登录失败的Message
-				// return ...
+				Message msgRt = new Message(MessageType.USER_LOGIN,
+						MessageStatusCode.FAILED);
+				msgRt.setData(null);
+				return msgRt;
 			}
 			
 			// 校验数据库中的User
@@ -85,8 +91,7 @@ public class ServerSrvHelper implements Runnable {
 			}
 			
 			// 反馈Message
-			Message msgRt = new Message();
-			msgRt.setType(MessageType.USER_LOGIN);
+			Message msgRt = new Message(MessageType.USER_LOGIN);
 			if (loginRs) {
 				msgRt.setStatusCode(MessageStatusCode.SUCCESS); // 登录成功
 				msgRt.setData(user); // 将已填充数据的user封装进Message
@@ -99,8 +104,10 @@ public class ServerSrvHelper implements Runnable {
 		} else if (type.equals(MessageType.USER_REGISTER)) { // 注册
 			User user = ObjectTransformer.getUser(msg.getData());
 			if (user == null) {
-				// TODO: 返回注册失败的Message
-				// return ...
+				Message msgRt = new Message(MessageType.USER_REGISTER,
+						MessageStatusCode.FAILED);
+				msgRt.setData(null);
+				return msgRt;
 			}
 			
 			// TODO: 校验数据库中是否已存在此用户，否则添加
@@ -115,8 +122,7 @@ public class ServerSrvHelper implements Runnable {
 				e.printStackTrace();
 			}
 			
-			Message msgRt = new Message();
-			msgRt.setType(MessageType.USER_REGISTER);
+			Message msgRt = new Message(MessageType.USER_REGISTER);
 			if (registerRs) {
 				msgRt.setStatusCode(MessageStatusCode.SUCCESS);
 				msgRt.setData(user);
@@ -126,8 +132,50 @@ public class ServerSrvHelper implements Runnable {
 			}
 			
 			return msgRt;
+		} else if (type.equals(MessageType.USER_LOGOUT)) {
+			User user = ObjectTransformer.getUser(msg.getData());
+			
+			// 通信传输失败 OR ...
+			if (user == null) { 
+				Message msgRt = new Message(MessageType.USER_LOGOUT,
+						MessageStatusCode.FAILED);
+				msgRt.setData(null);
+				return msgRt;
+			}
+			
+			// 校验数据库并修改用户状态域
+			boolean logoutRs = false;
+			try {
+				logoutRs = DatabaseOperator.logout(user);
+			} catch (ClassNotFoundException e) {
+				System.out.println("Driver Error during registering");
+				e.printStackTrace();
+			} catch (SQLException e) {
+				System.out.println("Database Access Error during registering");
+				e.printStackTrace();
+			}
+			
+			// 反馈Message
+			Message msgRt = new Message(MessageType.USER_LOGOUT);
+			if (logoutRs) {
+				msgRt.setSender(MessageStatusCode.SUCCESS);
+				msgRt.setData(user);
+				this.close();// 关闭线程监听
+			} else { // 登出失败。。。基本不会发生...
+				msgRt.setStatusCode(MessageStatusCode.FAILED);
+				msgRt.setData(null);
+			}
+			
+			return msgRt;
 		}
 		
 		return null;
+	}
+	
+	/**
+	 * 关闭线程
+	 */
+	private void close() {
+		this.closed = true;
 	}
 }

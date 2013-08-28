@@ -1,5 +1,6 @@
 package vclient.srv;
 
+import goclis.util.MessageType;
 import goclis.util.ObjectTransformer;
 
 import java.io.IOException;
@@ -29,7 +30,9 @@ public class ClientSrvHelper {
 			e.printStackTrace();
 		}
 	}
-
+	
+	// ---------- 用户管理模块 BEGIN -----------
+	
 	/**
 	 * 验证传入的User是否可注册（服务器端）
 	 * 成功则原样返回，失败则返回null
@@ -37,7 +40,10 @@ public class ClientSrvHelper {
 	 * @return
 	 */
 	public User register(User user) {
-		Message regMsg = Message.registerMessage(user); // 封装登录请求Message
+		// 封装登录请求Message
+		Message regMsg = new Message(MessageType.USER_REGISTER);
+		regMsg.setData(user);
+		
 		try {
 			// 发送请求至服务器
 			toServer = new ObjectOutputStream(socket.getOutputStream());
@@ -59,7 +65,15 @@ public class ClientSrvHelper {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} /*finally {
+			try {
+				toServer.close();
+				fromServer.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}*/
 		
 		return null; // 以防异常
 	}
@@ -71,7 +85,8 @@ public class ClientSrvHelper {
 	 */
 	public User login(User user) {
 		// 创建登录请求的Message
-		Message msgLogin = Message.loginMessage(user);
+		Message msgLogin = new Message(MessageType.USER_LOGIN);
+		msgLogin.setData(user);
 		
 		try {
 			// 将请求发送到服务器
@@ -84,19 +99,61 @@ public class ClientSrvHelper {
 			Message msgBack = ObjectTransformer.getMessage(fromServer.readObject());
 			
 			return ObjectTransformer.getUser(msgBack.getData());
-			//System.out.println(msgBack.getType() + " " + msgBack.getStatusCode());
-			/*if (msgBack.getType() == MessageType.USER_LOGIN
-					&& msgBack.getStatusCode() == MessageStatusCode.SUCCESS) {
-				System.out.println("登录成功");
-			}*/
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} /*finally {
+			try {
+				toServer.close();
+				fromServer.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}*/
 		
 		return null; // 以防异常
 	}
+	
+	/**
+	 * 处理登出
+	 * 登出成功返回user，失败返回null
+	 */
+	public User logout(User user) {
+		// 封装登出Message
+		Message msgLogout = new Message(MessageType.USER_LOGOUT);
+		msgLogout.setData(user);
+		
+		try {
+			toServer = new ObjectOutputStream(socket.getOutputStream());
+			toServer.writeObject(msgLogout);
+			toServer.flush();
+			
+			fromServer = new ObjectInputStream(socket.getInputStream());
+			Message msgBack = ObjectTransformer.getMessage(fromServer.readObject());
+			
+			return ObjectTransformer.getUser(msgBack.getData());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} /*finally {
+			try {
+				toServer.close();
+				fromServer.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}*/
+		
+		return null;
+	}
+
+	// ------------ 用户管理模块 END ---------------
 }

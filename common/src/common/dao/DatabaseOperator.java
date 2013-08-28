@@ -110,4 +110,29 @@ public class DatabaseOperator {
 		
 		return true;
 	}
+	
+	/*
+	 * 处理登出时用户状态的改变
+	 */
+	public static boolean logout(User user) 
+			throws ClassNotFoundException, SQLException {
+		String uId = user.getId();
+		
+		// 连接数据库
+		Class.forName(DRIVER_NAME);
+		Connection conn = DriverManager.getConnection(CONN_URL, USER_NAME, PASSWORD);
+		PreparedStatement preparedStat = conn.prepareStatement(sqlGetUsers);
+		preparedStat.setString(1, uId);
+		ResultSet rs = preparedStat.executeQuery();
+		
+		if (rs.first()) {
+			String sqlLogout = String.format(
+					"update ci_user set status = 'offline' where id = '%s'", uId);
+			Statement stat = conn.createStatement();
+			stat.executeUpdate(sqlLogout);
+			return true;
+		}
+		
+		return false;
+	}
 }

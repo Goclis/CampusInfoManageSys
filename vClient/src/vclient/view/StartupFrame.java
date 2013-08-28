@@ -203,7 +203,8 @@ public class StartupFrame extends JFrame
 			} else {
 				System.out.println("登录成功");
 				// TODO: 启动主界面
-				// ...
+				new MainFrame(clientSrv, user);
+				this.dispose();
 			}
 		}
 	}
