@@ -29,8 +29,9 @@ sudo vim /etc/mysql/my.conf
 sudo ./etc/init.d/mysql restart
 http://www.blogjava.net/zhyiwww/archive/2012/03/01/371055.html
 
+3. 小心Socket被关闭
+在我们的工程里，是通过保存Socket来保证通信的，而通信时建立的输入输出流来传输数据（Message）
+但是！！！！注意显示关闭输入输出流会导致Socket关闭。
+所以，如果使用的是保存Socket维持通信的方式，则不要关闭输入输出流，交给Java虚拟机自行维护即可
 
-
-
-
-
+另一种方式则是在每次有请求要发到服务器的时候，都重新建立一个Socket，进而使用其的输入输出流来传输数据，这种方法较好！可以在往后重构代码时考虑
