@@ -6,6 +6,8 @@ package vclient.view;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -24,7 +26,6 @@ import vclient.srv.ClientSrvHelper;
  */
 public class MainFrame extends JFrame implements ActionListener {
 	private ClientSrvHelper clientSrv; // 保存ClientSrvHelper
-	
 	
 	private JButton jbtSchollRoll = new JButton("学籍管理");
 	private JButton jbtCourses = new JButton("选课系统");
@@ -57,9 +58,17 @@ public class MainFrame extends JFrame implements ActionListener {
 		setProperties();
 		setComponentAction();
 	}
-
+	
+	/**
+	 * for test
+	 */
 	public MainFrame() {
-		this(null, null);
+		User user = new User();
+		user.setName("test");
+		this.user = user;
+		initComponents();
+		setProperties();
+		setComponentAction();
 	}
 
 	private void setComponentAction() {
@@ -71,33 +80,33 @@ public class MainFrame extends JFrame implements ActionListener {
 	}
 
 	private void setProperties() {
-		this.setSize(500, 400);
+		this.setSize(200, 300);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		Dimension frameSize = this.getSize();
+		this.setLocation((screenSize.width - frameSize.width) / 2, 100);
+		
 		this.setVisible(true);
 	}
 
 	private void initComponents() {
-		// create a Box (BoxLayout) to hold selection buttons
-		Box boxModules = Box.createHorizontalBox(); 
 		Font ft = new Font(jbtSchollRoll.getFont().getFamily(), Font.BOLD, 20);
-		boxModules.add(Box.createHorizontalGlue());
-		boxModules.add(jbtSchollRoll);
-		boxModules.add(Box.createHorizontalGlue());
-		boxModules.add(jbtCourses);
-		boxModules.add(Box.createHorizontalGlue());
-		boxModules.add(jbtLibrary);
-		boxModules.add(Box.createHorizontalGlue());
-		boxModules.add(jbtStore);
-		boxModules.add(Box.createHorizontalGlue());
-		boxModules.add(jlbWelcome = new JLabel("欢迎登录，***  "));
-		boxModules.add(jbtLogout);
+		jlbWelcome = new JLabel("欢迎登录，" + user.getName() + "   ");
+		jlbWelcome.setHorizontalAlignment(JLabel.CENTER);
 		jbtSchollRoll.setFont(ft);
 		jbtCourses.setFont(ft);
 		jbtLibrary.setFont(ft);
 		jbtStore.setFont(ft);
+		jbtLogout.setFont(ft);
 		
-		this.setLayout(new BorderLayout());
-		this.add(boxModules, BorderLayout.NORTH);
+		this.setLayout(new GridLayout(7, 1, 5, 5));
+		this.add(jlbWelcome);
+		this.add(jbtSchollRoll);
+		this.add(jbtCourses);
+		this.add(jbtStore);
+		this.add(jbtLibrary);
+		this.add(jbtLogout);
 	}
 
 	@Override

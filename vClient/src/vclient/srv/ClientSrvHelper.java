@@ -20,13 +20,14 @@ public class ClientSrvHelper {
 	private ObjectOutputStream toServer;
 	
 	public ClientSrvHelper() {
+		// 创建socket保持联系
 		try {
 			socket = new Socket(host, port);
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
+			System.out.println("不确定的主机");
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.out.println("客户端连接服务器失败");
 			e.printStackTrace();
 		}
 	}
@@ -55,25 +56,16 @@ public class ClientSrvHelper {
 			Object obj = fromServer.readObject();
 			Message msg = ObjectTransformer.getMessage(obj);
 			
-			// TODO: 根据得到的Message中的状态域进行不同的提示
 			User userRt = ObjectTransformer.getUser(msg.getData());
 			
 			return userRt;
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
+			System.out.println("注册Error");
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.out.println("注册Error");
 			e.printStackTrace();
-		} /*finally {
-			try {
-				toServer.close();
-				fromServer.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}*/
+		} 
 		
 		return null; // 以防异常
 	}
@@ -100,20 +92,12 @@ public class ClientSrvHelper {
 			
 			return ObjectTransformer.getUser(msgBack.getData());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.out.println("登录Error");
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
+			System.out.println("登录Error");
 			e.printStackTrace();
-		} /*finally {
-			try {
-				toServer.close();
-				fromServer.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}*/
+		} 
 		
 		return null; // 以防异常
 	}
@@ -137,20 +121,12 @@ public class ClientSrvHelper {
 			
 			return ObjectTransformer.getUser(msgBack.getData());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.out.println("登出Error");
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
+			System.out.println("登出Error");
 			e.printStackTrace();
-		} /*finally {
-			try {
-				toServer.close();
-				fromServer.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}*/
+		} 
 		
 		return null;
 	}

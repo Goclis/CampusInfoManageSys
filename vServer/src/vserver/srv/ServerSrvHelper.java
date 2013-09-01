@@ -11,9 +11,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
 
+import vserver.dao.DatabaseOperator;
+
 import common.beans.Message;
 import common.beans.User;
-import common.dao.DatabaseOperator;
 
 public class ServerSrvHelper implements Runnable {
 	private int port = 8000;
@@ -81,7 +82,8 @@ public class ServerSrvHelper implements Runnable {
 			// 校验数据库中的User
 			boolean loginRs = false; // 校验结果
 			try {
-				loginRs = DatabaseOperator.login(user);
+				DatabaseOperator dbOperator = new DatabaseOperator();
+				loginRs = dbOperator.login(user);
 			} catch (ClassNotFoundException e) {
 				System.out.println("Driver Error during logining in");
 				e.printStackTrace();
@@ -113,7 +115,8 @@ public class ServerSrvHelper implements Runnable {
 			// TODO: 校验数据库中是否已存在此用户，否则添加
 			boolean registerRs = false;
 			try {
-				registerRs = DatabaseOperator.register(user);
+				DatabaseOperator dbOperator = new DatabaseOperator();
+				registerRs = dbOperator.register(user);
 			} catch (ClassNotFoundException e) {
 				System.out.println("Driver Error during registering");
 				e.printStackTrace();
@@ -146,7 +149,8 @@ public class ServerSrvHelper implements Runnable {
 			// 校验数据库并修改用户状态域
 			boolean logoutRs = false;
 			try {
-				logoutRs = DatabaseOperator.logout(user);
+				DatabaseOperator dbOperator = new DatabaseOperator();
+				logoutRs = dbOperator.logout(user);
 			} catch (ClassNotFoundException e) {
 				System.out.println("Driver Error during registering");
 				e.printStackTrace();

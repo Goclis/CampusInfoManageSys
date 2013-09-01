@@ -1,7 +1,9 @@
 package vclient.view;
 
 
+import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.Socket;
@@ -134,9 +136,14 @@ public class RegisterFrame extends JFrame
 	 */
 	private void setProperties() {
 		this.setTitle("注册");
-		this.setVisible(true);
-		this.pack();
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		this.pack();
+		
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		Dimension frameSize = this.getSize();
+		this.setLocation((screenSize.width - frameSize.width) / 2, 100);
+		
+		this.setVisible(true);
 	}
 
 	/**
