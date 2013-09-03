@@ -63,9 +63,17 @@ public final class ObjectTransformer {
 		}
 	}
 
-	public static ArrayList<ShoppingItem> getList(Object data) {
+	public static ArrayList<ShoppingItem> getShoppingList(Object data) {
 		if (data != null) {
 			return (ArrayList<ShoppingItem>) data;
+		} else {
+			return null;
+		}
+	}
+
+	public static ArrayList<Good> getGoodList(Object data) {
+		if (data != null) {
+			return (ArrayList<Good>) data;
 		} else {
 			return null;
 		}

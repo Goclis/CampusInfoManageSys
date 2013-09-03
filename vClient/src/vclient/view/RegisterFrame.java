@@ -6,8 +6,6 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.Socket;
-
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -18,8 +16,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-
-import org.omg.CORBA.ShortSeqHelper;
 
 import common.beans.User;
 
@@ -76,23 +72,14 @@ public class RegisterFrame extends JFrame
 	private JComboBox<String> jcboDepart;
 	private JComboBox<String> jcboMajor; // 需要根据选择的院系变化
 	private JComboBox<String> jcboIdentity;
-
 	private JButton jbtOk = new JButton("确定");
 	private JButton jbtCancel = new JButton("取消");
-	
-	// 保存ClientSrvHelper进行服务
-	ClientSrvHelper clientSrv;
 	
 	public static void main(String[] args) {
 		new RegisterFrame();
 	}
 	
 	public RegisterFrame() {
-		this(null);
-	}
-
-	public RegisterFrame(ClientSrvHelper clientSrv) {
-		this.clientSrv = clientSrv;
 		initComponents();
 		setProperties();
 		setComponentAction();
@@ -199,7 +186,7 @@ public class RegisterFrame extends JFrame
 					&& user.getPassword().isEmpty()) {
 				JOptionPane.showMessageDialog(this, "用户名和密码不能为空");
 			} else {
-				user = clientSrv.register(user);
+				user = ClientSrvHelper.register(user);
 				
 				// 根据返回的结果给出反馈
 				// TODO: 优化反馈的界面

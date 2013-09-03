@@ -13,3 +13,4 @@
 // TODO: 根据关键字查询商品
 // TODO：根据类别查询商品
 // TODO: 结算购物车
+// TODO: 封装SendMessage

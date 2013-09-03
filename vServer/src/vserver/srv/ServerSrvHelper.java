@@ -10,6 +10,7 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,7 +18,9 @@ import java.util.concurrent.Future;
 
 import vserver.dao.UserManageDbOperator;
 
+import common.beans.Good;
 import common.beans.Message;
+import common.beans.ShoppingItem;
 import common.beans.User;
 
 public class ServerSrvHelper implements Runnable {
@@ -57,8 +60,7 @@ public class ServerSrvHelper implements Runnable {
 				toClient.writeObject(msgRet);
 				toClient.flush();
 			} catch (IOException e) {
-				// TODO 处理客户端断开后，如何结束线程
-				e.printStackTrace();
+				System.out.println("客户端已关闭");
 				this.close();
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
@@ -92,27 +94,26 @@ public class ServerSrvHelper implements Runnable {
 			}
 		} else if (type.equals(MessageType.STORE_ADD_NEW_GOOD)		// 商店模块
 				|| type.equals(MessageType.STORE_QUERY_BY_KEY) 
-				|| type.equals(MessageType.STORE_QUERY_BY_TYPE)) { 
+				|| type.equals(MessageType.STORE_QUERY_BY_TYPE)
+				|| type.equals(MessageType.STORE_BUY)) { 
 			StoreServerSrv storeSrv = new StoreServerSrv();
-			// TODO: 考虑合并至构造函数
-			storeSrv.setMessageType(type); // 设置类型
-			storeSrv.setData(msg.getData()); // 设置数据
 			
-			Future<Message> result = threadPools.submit(storeSrv);
-			try {
-				return result.get();
-			} catch (InterruptedException e) {
-				System.out.println("Error when add new good");
-				e.printStackTrace();
-			} catch (ExecutionException e) {
-				System.out.println("Error when add new good");
-				e.printStackTrace();
+			if (type.equals(MessageType.STORE_ADD_NEW_GOOD)) { // 添加新商品
+				Good good = ObjectTransformer.getGood(msg.getData());
+				return storeSrv.addNewGood(good);
+			} else if (type.equals(MessageType.STORE_QUERY_BY_KEY)) { // 按关键字搜索
+				String key = ObjectTransformer.getString(msg.getData());
+				return storeSrv.queryByKey(key);
+			} else if (type.equals(MessageType.STORE_QUERY_BY_TYPE)) { // 按类型搜索
+				String queryType = ObjectTransformer.getString(msg.getData());
+				return storeSrv.queryByType(queryType);
+			} else if (type.equals(MessageType.STORE_BUY)) {
+				ArrayList<ShoppingItem> goods = ObjectTransformer.getShoppingList(msg.getData());
+				return storeSrv.buyGoods(goods);
 			}
-			
-			return Message.createFailureMessage();
 		}
 		
-		return null;
+		return Message.createFailureMessage();
 	}
 	
 	/**

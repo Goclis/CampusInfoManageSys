@@ -1,38 +1,20 @@
 package vclient.view;
 
 
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.Toolkit;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.net.Socket;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
-
-import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.JTree;
-import javax.swing.SwingConstants;
-import javax.swing.border.LineBorder;
-
-import common.beans.Message;
 import common.beans.User;
 
 import vclient.srv.ClientSrvHelper;
@@ -58,14 +40,12 @@ public class StartupFrame extends JFrame
 	private JButton jbtLogin = new JButton("登录");
 	private JButton jbtRegister = new JButton("注册");
 	
-	private ClientSrvHelper clientSrv; // 保存ClientSrvHelper进行服务
 	private User user; // 保存登录的用户
 	
 	/**
 	 * 初始化
 	 */
 	public StartupFrame() {		
-		clientSrv = new ClientSrvHelper();
 		initComponents();
 		setProperties();
 		setComponentAction();
@@ -168,7 +148,7 @@ public class StartupFrame extends JFrame
 	 * 处理注册
 	 */
 	private void doRegister() {
-		JFrame frame = new RegisterFrame(clientSrv); // 传递ServiceHelper
+		JFrame frame = new RegisterFrame(); 
 		frame.setTitle("注册");
 		frame.setVisible(true);
 		
@@ -194,7 +174,7 @@ public class StartupFrame extends JFrame
 			user = new User(userId, pwd, identity);
 			// TODO: 美化登录Loading界面
 			new LoadingThread(user, this).start(); // Loading界面
-			user = clientSrv.login(user);
+			user = ClientSrvHelper.login(user);
 			
 			// 处理登录结果
 			// TODO: 优化反馈信息
@@ -203,7 +183,7 @@ public class StartupFrame extends JFrame
 			} else {
 				System.out.println("登录成功");
 				// TODO: 启动主界面
-				new MainFrame(clientSrv, user);
+				new MainFrame(user);
 				this.dispose();
 			}
 		}

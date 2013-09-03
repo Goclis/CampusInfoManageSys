@@ -13,7 +13,7 @@ import common.beans.Message;
 import common.beans.User;
 
 /**
- * 提供用户管理模块的服务
+ * 提供服务器端用户管理模块的服务
  * @author goclis
  */
 public class UserManageServerSrv {
@@ -108,7 +108,7 @@ public class UserManageServerSrv {
 		// 反馈Message
 		Message msgRt = new Message(MessageType.USER_LOGOUT);
 		if (logoutRs) {
-			msgRt.setSender(MessageStatusCode.SUCCESS);
+			msgRt.setStatusCode(MessageStatusCode.SUCCESS);
 			msgRt.setData(user);
 			serverSrvHelper.close();// 关闭线程监听
 		} else { // 登出失败。。。基本不会发生...

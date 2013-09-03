@@ -25,8 +25,6 @@ import vclient.srv.ClientSrvHelper;
  * @author goclis
  */
 public class MainFrame extends JFrame implements ActionListener {
-	private ClientSrvHelper clientSrv; // 保存ClientSrvHelper
-	
 	private JButton jbtSchollRoll = new JButton("学籍管理");
 	private JButton jbtCourses = new JButton("选课系统");
 	private JButton jbtLibrary = new JButton("图书馆");
@@ -43,16 +41,8 @@ public class MainFrame extends JFrame implements ActionListener {
 		new MainFrame();
 	}
 	
-	public MainFrame(ClientSrvHelper clientSrv) {
-		this.clientSrv = clientSrv;
-		initComponents();
-		setProperties();
-		setComponentAction();
-	}
-
-	public MainFrame(ClientSrvHelper clientSrv, User user) {
-		this.clientSrv = clientSrv;
-		this.user = user;
+	public MainFrame(User user2) {
+		this.user = user2;
 		initComponents();
 		setProperties();
 		setComponentAction();
@@ -120,7 +110,7 @@ public class MainFrame extends JFrame implements ActionListener {
 		} else if (e.getSource() == jbtStore) {
 			System.out.println("商店");
 		} else if (e.getSource() == jbtLogout) {
-			User userBack = clientSrv.logout(this.user);
+			User userBack = ClientSrvHelper.logout(this.user);
 			if (userBack == null) {
 				System.out.println("登出失败");
 			} else {
