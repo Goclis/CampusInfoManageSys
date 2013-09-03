@@ -1,6 +1,10 @@
 package goclis.util;
 
+import java.util.ArrayList;
+
+import common.beans.Good;
 import common.beans.Message;
+import common.beans.ShoppingItem;
 import common.beans.User;
 
 /**
@@ -38,6 +42,30 @@ public final class ObjectTransformer {
 	public static Message getMessage(Object obj) {
 		if (obj != null) {
 			return (Message) obj;
+		} else {
+			return null;
+		}
+	}
+
+	public static Good getGood(Object data) {
+		if (data != null) {
+			return (Good) data;
+		} else {
+			return null;
+		}
+	}
+
+	public static String getString(Object data) {
+		if (data != null) {
+			return (String) data;
+		} else {
+			return null;
+		}
+	}
+
+	public static ArrayList<ShoppingItem> getList(Object data) {
+		if (data != null) {
+			return (ArrayList<ShoppingItem>) data;
 		} else {
 			return null;
 		}

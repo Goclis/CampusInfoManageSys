@@ -39,6 +39,13 @@ public class Message implements Serializable {
 		this.data = null;
 		this.sender = null;
 	}
+	
+	public static Message createFailureMessage() {
+		Message msgRt = new Message();
+		msgRt.setData(null);
+		msgRt.setStatusCode(MessageStatusCode.FAILED);
+		return msgRt;
+	}
 
 	// Setters and Getters
 	public Long getUid() {
