@@ -8,6 +8,7 @@ import vserver.dao.StoreDbOperator;
 import common.beans.Good;
 import common.beans.Message;
 import common.beans.ShoppingItem;
+import common.beans.User;
 
 import goclis.util.MessageStatusCode;
 import goclis.util.MessageType;
@@ -94,10 +95,13 @@ public class StoreServerSrv {
 		return msgRt;
 	}
 	
-	public Message buyGoods(ArrayList<ShoppingItem> goods) {
+	public Message buyGoods(ArrayList<ShoppingItem> goods, User user) {
 		StoreDbOperator dbOperator = new StoreDbOperator();
-		dbOperator.buyGoods(goods);
-		return null;
+		ArrayList<Integer> goodIds = dbOperator.buyGoods(goods, user);
+		
+		Message msgRt = new Message(MessageType.STORE_BUY, goodIds);
+		
+		return msgRt;
 	}
 	
 }

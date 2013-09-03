@@ -15,8 +15,8 @@ import common.beans.Message;
 
 /**
  * 客户端服务类的抽象父类
+ * <p>负责创建Socket与服务器连接以及提供一些公共方法
  * @author goclis
- *
  */
 public class ClientService {
 	protected Socket socket;

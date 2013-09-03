@@ -15,13 +15,12 @@ import common.beans.User;
 
 /**
  * 为客户端题提供商店模块的服务
- * 功能：添加新商品（管理员），按关键字查询，按类型查询，购物车结算
+ * <p>功能：<p>添加新商品（管理员），<p>按关键字查询，<p>按类型查询，<p>购物车结算
  * @author goclis
- *
  */
 public class StoreClientSrv extends ClientService {
 	public StoreClientSrv() {
-		super();
+		super(); // 直接使用父类构造函数形成socket
 	}
 	
 	/**
@@ -63,17 +62,26 @@ public class StoreClientSrv extends ClientService {
 		if (socket != null) {
 			Message msg = new Message(MessageType.STORE_QUERY_BY_TYPE, type); // 封装Message
 			Message msgBack = sendMessage(msg, "按类型查询");
-			return ObjectTransformer.getGoodList(msg.getData());
+			return ObjectTransformer.getGoodList(msgBack.getData());
 		}
 		
 		return null;
 	}
-
-	public double buyGoods(ArrayList<ShoppingItem> list, User user) {
+	
+	/**
+	 * 结算购物车
+	 * @param list -- 要购买的商品（商品编号+数量）的列表
+	 * @param user -- 购买商品的用户
+	 * @return 购买成功返回null，否则返回出问题（<b>缺货</b>）的商品的编号的列表，
+	 * 如果列表为空（不为null说明通信失败，即socket==null），不为空为缺货
+	 */
+	public ArrayList<Integer> buyGoods(ArrayList<ShoppingItem> list, User user) {
 		if (socket != null) {
 			Message msg = new Message(MessageType.STORE_BUY, list, user);
+			Message msgBack = sendMessage(msg, "结算购物车");
+			return ObjectTransformer.getGoodIds(msgBack.getData());
 		}
 		
-		return -1.0;
+		return new ArrayList<Integer>();
 	}
 }

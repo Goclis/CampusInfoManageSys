@@ -62,7 +62,7 @@ public class ClientSrvHelper {
 	}
 	
 	/**
-	 * 按关键字查询商品
+	 * 使用StoreClientSrv执行按关键字查询商品服务
 	 * @param key -- 关键字
 	 * @return 查询成功则返回商品列表，失败返回null
 	 */
@@ -72,7 +72,7 @@ public class ClientSrvHelper {
 	}
 	
 	/**
-	 * 按类别查询商品
+	 * 使用StoreClientSrv执行按类别查询商品服务
 	 * @param type -- 类别
 	 * @return 查询成功则返回商品列表，失败返回null
 	 */
@@ -81,7 +81,14 @@ public class ClientSrvHelper {
 		return storeClientSrv.queryByType(type);
 	}
 	
-	public static double buyGoods(ArrayList<ShoppingItem> list, User user) {
+	/**
+	 * 使用StoreClientSrv执行结算购物车服务
+	 * @param list -- 要购买的商品（商品编号+数量）的列表
+	 * @param user -- 购买商品的用户
+	 * @return 购买成功返回null，否则返回出问题（<b>缺货</b>）的商品的编号的列表，
+	 * 如果列表为空（不为null说明通信失败，即socket==null），不为空为缺货
+	 */
+	public static ArrayList<Integer> buyGoods(ArrayList<ShoppingItem> list, User user) {
 		StoreClientSrv storeClientSrv = new StoreClientSrv();
 		return storeClientSrv.buyGoods(list, user);
 	}

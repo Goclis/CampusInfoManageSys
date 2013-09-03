@@ -9,8 +9,7 @@
 // TO (finished) DO: 添加closed域来安全关闭线程
 
 
-// TODO: 商店模块
-// TODO: 根据关键字查询商品
-// TODO：根据类别查询商品
-// TODO: 结算购物车
-// TODO: 封装SendMessage
+// TODO: 完善商店模块的其余功能
+// TODO: 结算购物车，已实现，但可继续优化
+
+// TODO：

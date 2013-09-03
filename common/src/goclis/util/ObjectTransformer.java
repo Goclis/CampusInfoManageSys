@@ -78,4 +78,12 @@ public final class ObjectTransformer {
 			return null;
 		}
 	}
+
+	public static ArrayList<Integer> getGoodIds(Object data) {
+		if (data != null) {
+			return (ArrayList<Integer>) data;
+		} else {
+			return null;
+		}
+	}
 }

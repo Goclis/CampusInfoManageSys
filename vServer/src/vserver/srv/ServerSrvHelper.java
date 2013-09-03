@@ -107,9 +107,10 @@ public class ServerSrvHelper implements Runnable {
 			} else if (type.equals(MessageType.STORE_QUERY_BY_TYPE)) { // 按类型搜索
 				String queryType = ObjectTransformer.getString(msg.getData());
 				return storeSrv.queryByType(queryType);
-			} else if (type.equals(MessageType.STORE_BUY)) {
+			} else if (type.equals(MessageType.STORE_BUY)) { // 购物车结算
 				ArrayList<ShoppingItem> goods = ObjectTransformer.getShoppingList(msg.getData());
-				return storeSrv.buyGoods(goods);
+				User user = ObjectTransformer.getUser(msg.getSender());
+				return storeSrv.buyGoods(goods, user);
 			}
 		}
 		
