@@ -10,8 +10,12 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
-import vserver.dao.DatabaseOperator;
+import vserver.dao.UserManageDbOperator;
 
 import common.beans.Message;
 import common.beans.User;
@@ -22,6 +26,9 @@ public class ServerSrvHelper implements Runnable {
 	private ObjectInputStream fromClient;
 	private ObjectOutputStream toClient;
 	private boolean closed;
+	
+	private ExecutorService threadPools = 
+			Executors.newCachedThreadPool(); // 线程池
 	
 	public static void main(String[] args) {
 		new ServerSrvHelper();
@@ -68,109 +75,41 @@ public class ServerSrvHelper implements Runnable {
 	private Message dealMessage(Message msg) {
 		Integer type = msg.getType(); 
 		
-		// TODO: 可以考虑封装if...else...块中的某些行为
 		// TODO: 考虑设置返回的Message的状态域，以标识更多的失败原因，比如服务器端问题（数据库错误）
-		if (type.equals(MessageType.USER_LOGIN)) { // 登录
-			User user = ObjectTransformer.getUser(msg.getData());
-			if (user == null) {
-				Message msgRt = new Message(MessageType.USER_LOGIN,
-						MessageStatusCode.FAILED);
-				msgRt.setData(null);
-				return msgRt;
-			}
-			
-			// 校验数据库中的User
-			boolean loginRs = false; // 校验结果
-			try {
-				DatabaseOperator dbOperator = new DatabaseOperator();
-				loginRs = dbOperator.login(user);
-			} catch (ClassNotFoundException e) {
-				System.out.println("Driver Error during logining in");
-				e.printStackTrace();
-			} catch (SQLException e) {
-				System.out.println("Database Access Error during logining in");
-				e.printStackTrace();
-			}
-			
-			// 反馈Message
-			Message msgRt = new Message(MessageType.USER_LOGIN);
-			if (loginRs) {
-				msgRt.setStatusCode(MessageStatusCode.SUCCESS); // 登录成功
-				msgRt.setData(user); // 将已填充数据的user封装进Message
-			} else {
-				msgRt.setStatusCode(MessageStatusCode.FAILED); // 登录失败
-				msgRt.setData(null); 
-			}
-			
-			return msgRt;
-		} else if (type.equals(MessageType.USER_REGISTER)) { // 注册
-			User user = ObjectTransformer.getUser(msg.getData());
-			if (user == null) {
-				Message msgRt = new Message(MessageType.USER_REGISTER,
-						MessageStatusCode.FAILED);
-				msgRt.setData(null);
-				return msgRt;
-			}
-			
-			// TODO: 校验数据库中是否已存在此用户，否则添加
-			boolean registerRs = false;
-			try {
-				DatabaseOperator dbOperator = new DatabaseOperator();
-				registerRs = dbOperator.register(user);
-			} catch (ClassNotFoundException e) {
-				System.out.println("Driver Error during registering");
-				e.printStackTrace();
-			} catch (SQLException e) {
-				System.out.println("Database Access Error during registering");
-				e.printStackTrace();
-			}
-			
-			Message msgRt = new Message(MessageType.USER_REGISTER);
-			if (registerRs) {
-				msgRt.setStatusCode(MessageStatusCode.SUCCESS);
-				msgRt.setData(user);
-			} else {
-				msgRt.setStatusCode(MessageStatusCode.FAILED);
-				msgRt.setData(null);
-			}
-			
-			return msgRt;
-		} else if (type.equals(MessageType.USER_LOGOUT)) {
+		
+		if (type.equals(MessageType.USER_LOGIN)			// 用户管理模块
+				|| type.equals(MessageType.USER_REGISTER)
+				|| type.equals(MessageType.USER_LOGOUT)) {
+			UserManageServerSrv userManageSrv = new UserManageServerSrv(this);
 			User user = ObjectTransformer.getUser(msg.getData());
 			
-			// 通信传输失败 OR ...
-			if (user == null) { 
-				Message msgRt = new Message(MessageType.USER_LOGOUT,
-						MessageStatusCode.FAILED);
-				msgRt.setData(null);
-				return msgRt;
+			if (type.equals(MessageType.USER_LOGIN)) { // 登录
+				return userManageSrv.login(user);
+			} else if (type.equals(MessageType.USER_REGISTER)) { // 注册
+				return userManageSrv.register(user);
+			} else if (type.equals(MessageType.USER_LOGOUT)) { // 登出
+				return userManageSrv.logout(user);
 			}
+		} else if (type.equals(MessageType.STORE_ADD_NEW_GOOD)		// 商店模块
+				|| type.equals(MessageType.STORE_QUERY_BY_KEY) 
+				|| type.equals(MessageType.STORE_QUERY_BY_TYPE)) { 
+			StoreServerSrv storeSrv = new StoreServerSrv();
+			// TODO: 考虑合并至构造函数
+			storeSrv.setMessageType(type); // 设置类型
+			storeSrv.setData(msg.getData()); // 设置数据
 			
-			// 校验数据库并修改用户状态域
-			boolean logoutRs = false;
+			Future<Message> result = threadPools.submit(storeSrv);
 			try {
-				DatabaseOperator dbOperator = new DatabaseOperator();
-				logoutRs = dbOperator.logout(user);
-			} catch (ClassNotFoundException e) {
-				System.out.println("Driver Error during registering");
+				return result.get();
+			} catch (InterruptedException e) {
+				System.out.println("Error when add new good");
 				e.printStackTrace();
-			} catch (SQLException e) {
-				System.out.println("Database Access Error during registering");
+			} catch (ExecutionException e) {
+				System.out.println("Error when add new good");
 				e.printStackTrace();
 			}
 			
-			// 反馈Message
-			Message msgRt = new Message(MessageType.USER_LOGOUT);
-			if (logoutRs) {
-				msgRt.setSender(MessageStatusCode.SUCCESS);
-				msgRt.setData(user);
-				this.close();// 关闭线程监听
-			} else { // 登出失败。。。基本不会发生...
-				msgRt.setStatusCode(MessageStatusCode.FAILED);
-				msgRt.setData(null);
-			}
-			
-			return msgRt;
+			return Message.createFailureMessage();
 		}
 		
 		return null;
@@ -179,7 +118,7 @@ public class ServerSrvHelper implements Runnable {
 	/**
 	 * 关闭线程
 	 */
-	private void close() {
+	public void close() {
 		this.closed = true;
 	}
 }
