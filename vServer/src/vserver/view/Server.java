@@ -6,6 +6,8 @@ import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import common.beans.Message;
 
@@ -16,6 +18,9 @@ public class Server {
 	
 	// threads 保存为每个客户端所创建的线程
 	private HashMap<Long, ServerSrvHelper> threads; 
+	
+	// 线程池
+	private ExecutorService threadPools = Executors.newCachedThreadPool();
 	
 	/**
 	 * @param args
@@ -30,7 +35,7 @@ public class Server {
 			System.out.println("Server Start");
 			while (true) {
 				Socket socket = serverSocket.accept();
-				new Thread(new ServerSrvHelper(socket)).start();
+				threadPools.execute(new ServerSrvHelper(socket));
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
