@@ -34,8 +34,7 @@ public class MainFrame extends JFrame implements ActionListener {
 	private JLabel jlbWelcome;
 	private JButton jbtLogout = new JButton("登出");
 
-
-	private User user;
+	private User user; // 用户
 	
 	/**
 	 * @param args

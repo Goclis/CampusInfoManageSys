@@ -7,3 +7,9 @@
 // TODO: 优化logout等方法的参数及返回值
 
 // TO (finished) DO: 添加closed域来安全关闭线程
+
+
+// TODO: 商店模块
+// TODO: 根据关键字查询商品
+// TODO：根据类别查询商品
+// TODO: 结算购物车
