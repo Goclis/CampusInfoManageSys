@@ -95,7 +95,19 @@ public class StoreServerSrv {
 		return msgRt;
 	}
 	
+	/**
+	 * 结算购物车
+	 * @param goods -- 要购买的商品（商品编号+数量）的列表
+	 * @param user -- 购买商品的用户
+	 * @return 购买成功返回null，否则返回出问题（<b>缺货</b>）的商品的编号的列表，
+	 * 如果列表为空（不为null, 说明通信失败，即socket==null），不为空为缺货
+	 */
 	public Message buyGoods(ArrayList<ShoppingItem> goods, User user) {
+		if (goods == null || user == null) {
+			// 返回一个空ArrayList表示通信失败
+			return new Message(MessageType.STORE_BUY, new ArrayList<Integer>());
+		}
+		
 		StoreDbOperator dbOperator = new StoreDbOperator();
 		ArrayList<Integer> goodIds = dbOperator.buyGoods(goods, user);
 		

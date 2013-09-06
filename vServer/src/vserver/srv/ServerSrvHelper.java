@@ -18,6 +18,7 @@ import java.util.concurrent.Future;
 
 import vserver.dao.UserManageDbOperator;
 
+import common.beans.Course;
 import common.beans.Good;
 import common.beans.Message;
 import common.beans.ShoppingItem;
@@ -60,11 +61,13 @@ public class ServerSrvHelper implements Runnable {
 				toClient.writeObject(msgRet);
 				toClient.flush();
 			} catch (IOException e) {
-				System.out.println("客户端已关闭");
+				System.out.println("本线程已关闭");
 				this.close();
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 				this.close();
+			} finally {
+				this.close(); // 服务执行完毕关闭线程
 			}
 		}
 	}
@@ -111,6 +114,21 @@ public class ServerSrvHelper implements Runnable {
 				ArrayList<ShoppingItem> goods = ObjectTransformer.getShoppingList(msg.getData());
 				User user = ObjectTransformer.getUser(msg.getSender());
 				return storeSrv.buyGoods(goods, user);
+			}
+		} else if (type.equals(MessageType.COURSE_USER_ADD)
+				|| type.equals(MessageType.COURSE_QUERY_USER_ALL)
+				|| type.equals(MessageType.COURSE_QUERY_ALL)) { 		// 选课模块 
+			CourseServerSrv courseSrv = new CourseServerSrv();
+			
+			if (type.equals(MessageType.COURSE_USER_ADD)) { // 用户添加课程
+				Integer courseId = ObjectTransformer.getInteger(msg.getData());
+				User user = ObjectTransformer.getUser(msg.getSender());
+				return courseSrv.userAddCourse(courseId, user);
+			} else if (type.equals(MessageType.COURSE_QUERY_USER_ALL)) { // 查询用户已选课程
+				String userId = ObjectTransformer.getString(msg.getData());
+				return courseSrv.queryUserCourse(userId);
+			} else if (type.equals(MessageType.COURSE_QUERY_ALL)) { // 查询所有课程
+				return courseSrv.queryAllCourse();
 			}
 		}
 		

@@ -141,7 +141,7 @@ public class StoreDbOperator {
 	 * 购物结算，改变商品库存，改变用户账户余额
 	 * @param list -- 要结算的list
 	 * @param user -- 购物者
-	 * @return 购物成功（不缺货）情况下返回null，缺货返回
+	 * @return 购物成功（不缺货）情况下返回null，缺货返回缺货商品的编号的列表
 	 */
 	public ArrayList<Integer> buyGoods(ArrayList<ShoppingItem> list, User user) {
 		ArrayList<Integer> goodIds = null;

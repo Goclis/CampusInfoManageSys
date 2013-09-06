@@ -19,6 +19,11 @@ public final class MessageType {
 	public static final Integer STORE_QUERY_BY_TYPE = 6; // 根据类别查询商品
 	public static final Integer STORE_BUY = 7; // 购物车结算
 	
+	// 选课模块
+	public static final Integer COURSE_USER_ADD = 8; // 用户添加课程
+	public static final Integer COURSE_QUERY_USER_ALL = 9; // 查询用户所有课程
+	public static final Integer COURSE_QUERY_ALL = 10; // 查询所有课程
+	
 	/**
 	 * 拒绝实例化
 	 */

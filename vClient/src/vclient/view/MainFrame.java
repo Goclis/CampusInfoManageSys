@@ -41,8 +41,8 @@ public class MainFrame extends JFrame implements ActionListener {
 		new MainFrame();
 	}
 	
-	public MainFrame(User user2) {
-		this.user = user2;
+	public MainFrame(User user) {
+		this.user = user;
 		initComponents();
 		setProperties();
 		setComponentAction();
@@ -59,7 +59,10 @@ public class MainFrame extends JFrame implements ActionListener {
 		setProperties();
 		setComponentAction();
 	}
-
+	
+	/**
+	 * 添加事件响应
+	 */
 	private void setComponentAction() {
 		jbtSchollRoll.addActionListener(this);
 		jbtCourses.addActionListener(this);
@@ -67,7 +70,10 @@ public class MainFrame extends JFrame implements ActionListener {
 		jbtStore.addActionListener(this);
 		jbtLogout.addActionListener(this);
 	}
-
+	
+	/**
+	 * 设置框架属性
+	 */
 	private void setProperties() {
 		this.setSize(200, 300);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -78,7 +84,10 @@ public class MainFrame extends JFrame implements ActionListener {
 		
 		this.setVisible(true);
 	}
-
+	
+	/**
+	 * 初始化控件及布局
+	 */
 	private void initComponents() {
 		Font ft = new Font(jbtSchollRoll.getFont().getFamily(), Font.BOLD, 20);
 		jlbWelcome = new JLabel("欢迎登录，" + user.getName() + "   ");
@@ -105,6 +114,8 @@ public class MainFrame extends JFrame implements ActionListener {
 			System.out.println("学籍管理");
 		} else if (e.getSource() == jbtCourses) {
 			System.out.println("选课系统");
+			JFrame frame = new CourseManageFrame(this.user);
+			frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		} else if (e.getSource() == jbtLibrary) {
 			System.out.println("图书馆");
 		} else if (e.getSource() == jbtStore) {

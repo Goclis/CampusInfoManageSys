@@ -183,7 +183,7 @@ public class StartupFrame extends JFrame
 			} else {
 				System.out.println("登录成功");
 				// TODO: 启动主界面
-				new MainFrame(user);
+				new MainFrame(user).setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				this.dispose();
 			}
 		}
@@ -205,6 +205,7 @@ public class StartupFrame extends JFrame
 			this.jcParent = startupFrame;
 			jfLoading = new JFrame();
 			jfLoading.add(jlbLoading = new JLabel("加载中"));
+			jlbLoading.setFont(new Font(jlbLoading.getFont().getFamily(), Font.BOLD, 20));
 			jlbLoading.setHorizontalAlignment(JLabel.CENTER);
 			jfLoading.setSize(jcParent.getSize());
 			jfLoading.setLocationRelativeTo(jcParent);

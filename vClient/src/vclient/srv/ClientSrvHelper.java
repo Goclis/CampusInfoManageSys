@@ -2,6 +2,7 @@ package vclient.srv;
 
 import java.util.ArrayList;
 
+import common.beans.Course;
 import common.beans.Good;
 import common.beans.ShoppingItem;
 import common.beans.User;
@@ -94,4 +95,38 @@ public class ClientSrvHelper {
 	}
 	
 	// ------------ 商店模块 ENG -------------------
+	
+	// ------------ 选课模块 BEGIN -----------------
+	
+	/**
+	 * 使用CourseCLientSrv进行用户添加课程（学生选课，老师添加课）
+	 * @param courseId -- 要添加的课程
+	 * @param user -- 添加课程的用户
+	 * @return 添加成功返回courseId，否则返回null
+	 */
+	public static Integer userAddCourse(Integer courseId, User user) {
+		CourseClientSrv courseClientSrv = new CourseClientSrv();
+		return courseClientSrv.userAddCourse(courseId, user);
+	}
+	
+	/**
+	 * 使用CourseCLientSrv进行查询用户课程
+	 * @param user -- 要查询的用户
+	 * @return 查询成功返回course的列表，否则为空列表
+	 */
+	public static ArrayList<Course> queryUserCourse(String userId) {
+		CourseClientSrv courseClientSrv = new CourseClientSrv();
+		return courseClientSrv.queryUserCourse(userId);
+	}
+	
+	/**
+	 * 使用CourseClientSrv查询所有课程
+	 * @return
+	 */
+	public static ArrayList<Course> queryAllCourse() {
+		CourseClientSrv courseClientSrv = new CourseClientSrv();
+		return courseClientSrv.queryAllCourse();
+	}
+	
+	// ------------ 选课模块 END -------------------
 }
