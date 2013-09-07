@@ -9,6 +9,7 @@ import goclis.util.MessageStatusCode;
 import goclis.util.MessageType;
 import vserver.dao.CourseDbOperator;
 import common.beans.Course;
+import common.beans.CourseMark;
 import common.beans.Message;
 import common.beans.User;
 
@@ -19,21 +20,21 @@ import common.beans.User;
 public class CourseServerSrv {
 	/**
 	 * 处理用户添加课程并给予反馈信息
-	 * @param courseId -- 课程
+	 * @param course -- 课程
 	 * @param user -- 用户
 	 * @return 反馈信息，如果添加成功则data域不为null，否则...
 	 */
-	public Message userAddCourse(Integer courseId, User user) {
-		if (courseId == null || user == null) {
+	public Message studentAddCourse(Course course, User user) {
+		if (course == null || user == null) {
 			return Message.createFailureMessage();
 		}
 		
 		CourseDbOperator dbOperator = new CourseDbOperator();
-		boolean bAddCourse = dbOperator.userAddCourse(courseId, user);
+		boolean bAddCourse = dbOperator.studentAddCourse(course, user);
 		
 		Message msgRt = new Message(MessageType.COURSE_USER_ADD);
 		if (bAddCourse) {
-			msgRt.setData(courseId);
+			msgRt.setData(course);
 			msgRt.setStatusCode(MessageStatusCode.SUCCESS);
 		} else {
 			msgRt.setData(null);
@@ -49,7 +50,7 @@ public class CourseServerSrv {
 	 */
 	public Message queryUserCourse(String userId) {
 		if (userId == null) {
-			return Message.createFailureMessage();
+			return new Message(MessageType.COURSE_QUERY_USER_ALL, new ArrayList<Course>());
 		}
 		
 		CourseDbOperator dbOperator = new CourseDbOperator();
@@ -80,6 +81,53 @@ public class CourseServerSrv {
 			msgRt.setStatusCode(MessageStatusCode.SUCCESS);
 		} else {
 			msgRt.setData(new ArrayList<Course>()); // 返回空列表
+			msgRt.setStatusCode(MessageStatusCode.FAILED);
+		}
+		return msgRt;
+	}
+	
+	/**
+	 * 查询某课程的所有学生
+	 * @param courseId -- 课程ID
+	 * @param user -- 授课老师
+	 * @return Message中data域带用户列表，失败则列表为空
+	 */
+	public Message queryStudentSelectTheCourse(Integer courseId, User user) {
+		if (courseId == null || user == null) {
+			return new Message(MessageType.COURSE_QUERY_STUDENT, new ArrayList<CourseMark>());
+		} 
+		
+		CourseDbOperator dbOperator = new CourseDbOperator();
+		ArrayList<CourseMark> marks = dbOperator.queryStudentSelectTheCourse(courseId, user);
+		
+		Message msgRt = new Message(MessageType.COURSE_QUERY_STUDENT);
+		if (marks != null) {
+			msgRt.setData(marks);
+			msgRt.setStatusCode(MessageStatusCode.SUCCESS);
+		} else {
+			msgRt.setData(new ArrayList<CourseMark>()); // 返回空列表
+			msgRt.setStatusCode(MessageStatusCode.FAILED);
+		}
+		return msgRt;
+	}
+	
+	/**
+	 * 更新学生成绩
+	 * @param marks -- 成绩列表
+	 * @return statusCode域中包含成功或失败信息
+	 */
+	public Message updateStudentMark(ArrayList<CourseMark> marks) {
+		if (marks == null) {
+			return Message.createFailureMessage();
+		}
+		
+		CourseDbOperator dbOperator = new CourseDbOperator();
+		boolean bUpdate = dbOperator.updateStudentMark(marks);
+		
+		Message msgRt = new Message(MessageType.COURSE_UPDATE_MARK);
+		if (bUpdate) {
+			msgRt.setStatusCode(MessageStatusCode.SUCCESS);
+		} else {
 			msgRt.setStatusCode(MessageStatusCode.FAILED);
 		}
 		return msgRt;

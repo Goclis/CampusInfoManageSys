@@ -3,6 +3,7 @@ package goclis.util;
 import java.util.ArrayList;
 
 import common.beans.Course;
+import common.beans.CourseMark;
 import common.beans.Good;
 import common.beans.Message;
 import common.beans.ShoppingItem;
@@ -107,6 +108,22 @@ public final class ObjectTransformer {
 	public static Integer getInteger(Object data) {
 		if (data != null) {
 			return (Integer) data;
+		} else {
+			return null;
+		}
+	}
+
+	public static ArrayList<User> getUserList(Object data) {
+		if (data != null) {
+			return (ArrayList<User>) data;
+		} else {
+			return null;
+		}
+	}
+
+	public static ArrayList<CourseMark> getMarkList(Object data) {
+		if (data != null) {
+			return (ArrayList<CourseMark>) data;
 		} else {
 			return null;
 		}

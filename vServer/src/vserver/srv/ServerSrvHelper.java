@@ -19,6 +19,7 @@ import java.util.concurrent.Future;
 import vserver.dao.UserManageDbOperator;
 
 import common.beans.Course;
+import common.beans.CourseMark;
 import common.beans.Good;
 import common.beans.Message;
 import common.beans.ShoppingItem;
@@ -117,18 +118,27 @@ public class ServerSrvHelper implements Runnable {
 			}
 		} else if (type.equals(MessageType.COURSE_USER_ADD)
 				|| type.equals(MessageType.COURSE_QUERY_USER_ALL)
-				|| type.equals(MessageType.COURSE_QUERY_ALL)) { 		// 选课模块 
+				|| type.equals(MessageType.COURSE_QUERY_ALL)
+				|| type.equals(MessageType.COURSE_QUERY_STUDENT)
+				|| type.equals(MessageType.COURSE_UPDATE_MARK)) { 		// 选课模块 
 			CourseServerSrv courseSrv = new CourseServerSrv();
 			
 			if (type.equals(MessageType.COURSE_USER_ADD)) { // 用户添加课程
-				Integer courseId = ObjectTransformer.getInteger(msg.getData());
+				Course course = ObjectTransformer.getCourse(msg.getData());
 				User user = ObjectTransformer.getUser(msg.getSender());
-				return courseSrv.userAddCourse(courseId, user);
+				return courseSrv.studentAddCourse(course, user);
 			} else if (type.equals(MessageType.COURSE_QUERY_USER_ALL)) { // 查询用户已选课程
 				String userId = ObjectTransformer.getString(msg.getData());
 				return courseSrv.queryUserCourse(userId);
 			} else if (type.equals(MessageType.COURSE_QUERY_ALL)) { // 查询所有课程
 				return courseSrv.queryAllCourse();
+			} else if (type.equals(MessageType.COURSE_QUERY_STUDENT)) { // 查询选择了某门课的学生
+				Integer courseId = ObjectTransformer.getInteger(msg.getData());
+				User user = ObjectTransformer.getUser(msg.getSender());
+				return courseSrv.queryStudentSelectTheCourse(courseId, user);
+			} else if (type.equals(MessageType.COURSE_UPDATE_MARK)) { // 更新学生成绩
+				ArrayList<CourseMark> marks = ObjectTransformer.getMarkList(msg.getData());
+				return courseSrv.updateStudentMark(marks);
 			}
 		}
 		

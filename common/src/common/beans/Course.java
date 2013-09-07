@@ -7,6 +7,7 @@ public class Course implements Serializable {
 	private String courseName; // 课程名
 	private String teacherName; // 老师名
 	private String schooltime; // 上课时间
+	private Integer grade; // 分数
 	
 	public Course() {
 		
@@ -53,6 +54,14 @@ public class Course implements Serializable {
 
 	public void setSchooltime(String schooltime) {
 		this.schooltime = schooltime;
+	}
+
+	public Integer getGrade() {
+		return grade;
+	}
+
+	public void setGrade(Integer grade) {
+		this.grade = grade;
 	}
 	
 	

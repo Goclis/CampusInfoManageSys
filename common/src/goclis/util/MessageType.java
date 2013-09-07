@@ -23,6 +23,8 @@ public final class MessageType {
 	public static final Integer COURSE_USER_ADD = 8; // 用户添加课程
 	public static final Integer COURSE_QUERY_USER_ALL = 9; // 查询用户所有课程
 	public static final Integer COURSE_QUERY_ALL = 10; // 查询所有课程
+	public static final Integer COURSE_QUERY_STUDENT = 11; // 查询选了某们课的学生
+	public static final Integer COURSE_UPDATE_MARK = 12; // 更新学生成绩
 	
 	/**
 	 * 拒绝实例化

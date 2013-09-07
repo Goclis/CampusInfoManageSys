@@ -3,6 +3,7 @@ package vclient.srv;
 import java.util.ArrayList;
 
 import common.beans.Course;
+import common.beans.CourseMark;
 import common.beans.Good;
 import common.beans.ShoppingItem;
 import common.beans.User;
@@ -99,14 +100,14 @@ public class ClientSrvHelper {
 	// ------------ 选课模块 BEGIN -----------------
 	
 	/**
-	 * 使用CourseCLientSrv进行用户添加课程（学生选课，老师添加课）
-	 * @param courseId -- 要添加的课程
+	 * 使用CourseCLientSrv进行用户添加课程（学生选课）
+	 * @param course -- 要添加的课程
 	 * @param user -- 添加课程的用户
 	 * @return 添加成功返回courseId，否则返回null
 	 */
-	public static Integer userAddCourse(Integer courseId, User user) {
+	public static Course userAddCourse(Course course, User user) {
 		CourseClientSrv courseClientSrv = new CourseClientSrv();
-		return courseClientSrv.userAddCourse(courseId, user);
+		return courseClientSrv.userAddCourse(course, user);
 	}
 	
 	/**
@@ -126,6 +127,23 @@ public class ClientSrvHelper {
 	public static ArrayList<Course> queryAllCourse() {
 		CourseClientSrv courseClientSrv = new CourseClientSrv();
 		return courseClientSrv.queryAllCourse();
+	}
+	
+	/**
+	 * 查询选了某们课的所有学生
+	 * @param courseId -- 课程ID
+	 * @param user -- 授课老师
+	 * @return 学生列表（失败为空列表）
+	 */
+	public static ArrayList<CourseMark> queryStudentSelectTheCourse(Integer courseId,
+			User user) {
+		CourseClientSrv courseClientSrv = new CourseClientSrv();
+		return courseClientSrv.queryStudentSelectTheCourse(courseId, user);
+	}
+
+	public static boolean updateStudentMark(ArrayList<CourseMark> marks) {
+		CourseClientSrv courseClientSrv = new CourseClientSrv();
+		return courseClientSrv.updateStudentMark(marks);
 	}
 	
 	// ------------ 选课模块 END -------------------

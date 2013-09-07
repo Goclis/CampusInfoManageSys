@@ -114,8 +114,13 @@ public class MainFrame extends JFrame implements ActionListener {
 			System.out.println("学籍管理");
 		} else if (e.getSource() == jbtCourses) {
 			System.out.println("选课系统");
-			JFrame frame = new CourseManageFrame(this.user);
-			frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			if (user.getIdentity().equals("学生")) {
+				JFrame frame = new StudentCourseFrame(this.user);
+				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			} else {
+				JFrame frame = new TeacherCourseFrame(this.user);
+				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			}
 		} else if (e.getSource() == jbtLibrary) {
 			System.out.println("图书馆");
 		} else if (e.getSource() == jbtStore) {
