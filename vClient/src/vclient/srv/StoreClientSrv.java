@@ -3,15 +3,15 @@
  */
 package vclient.srv;
 
-import goclis.util.MessageType;
-import goclis.util.ObjectTransformer;
 
 import java.util.ArrayList;
 
-import common.beans.Good;
-import common.beans.Message;
-import common.beans.ShoppingItem;
-import common.beans.User;
+import common.util.MessageType;
+import common.util.ObjectTransformer;
+import common.vo.Message;
+import common.vo.User;
+import common.vo.store.Good;
+import common.vo.store.ShoppingItem;
 
 /**
  * 为客户端题提供商店模块的服务

@@ -3,7 +3,6 @@
  */
 package vserver.dao;
 
-import goclis.util.ObjectTransformer;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -12,9 +11,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import common.beans.Course;
-import common.beans.CourseMark;
-import common.beans.User;
+import common.util.ObjectTransformer;
+import common.vo.User;
+import common.vo.course.Course;
+import common.vo.course.CourseMark;
 
 /**
  * @author goclis
@@ -37,7 +37,7 @@ public class CourseDbOperator {
 	 * @param user -- 用户
 	 * @return 添加成功返回true, 否则false
 	 */
-	public boolean studentAddCourse(Course course, User user) {
+	public boolean userAddCourse(Course course, User user) {
 		try {
 			Class.forName(DRIVER_NAME);
 			conn = DriverManager.getConnection(CONN_URL, USER_NAME, PASSWORD);
@@ -47,26 +47,32 @@ public class CourseDbOperator {
 				String sql = String.format("INSERT INTO ci_course_users (course_id, user_id) VALUES (%s, '%s')", 
 						course.getCourseId(), user.getId());
 				if (stat.executeUpdate(sql) > 0) {
-					return true;
+					// 添加成绩
+					String sqlGrade = String.format("INSERT INTO ci_grade (student_id, course_id, grade) VALUES ('%s', %s, %s)",
+							user.getId(), course.getCourseId(), 0);
+					Statement stat2 = conn.createStatement();
+					if (stat2.executeUpdate(sqlGrade) > 0) {
+						return true;
+					}
 				} 
 			} else { // 老师新建课程
 				String sql = "SELECT id FROM ci_course ORDER BY id"; // 设置新的课程编号
 				rs = stat.executeQuery(sql);
+				int newId = 1;
 				if (rs.last()) {
-					int newId = Integer.valueOf(rs.getString(1)) + 1;
-					String sqlNewCourse = String.format("INSERT INTO ci_course (id, name, schooltime) VALUES (%s, '%s', '%s')",
-							newId, course.getCourseName(), course.getSchooltime());
-					Statement stat2 = conn.createStatement();
-					if (stat2.executeUpdate(sqlNewCourse) > 0) { // 插入成功
-						String sqlConnCourse = String.format("INSERT INTO ci_course_users (course_id, user_id) " +
-								"VALUES (%s, '%s')", newId, user.getId()); // 在ci_course_users表中建立关联
-						Statement stat3 = conn.createStatement();
-						if (stat3.executeUpdate(sqlConnCourse) > 0) {
-							return true;
-						}
+					newId = Integer.valueOf(rs.getString(1)) + 1;
+				}
+				String sqlNewCourse = String.format("INSERT INTO ci_course (id, name, schooltime) VALUES (%s, '%s', '%s')",
+						newId, course.getCourseName(), course.getSchooltime());
+				Statement stat2 = conn.createStatement();
+				if (stat2.executeUpdate(sqlNewCourse) > 0) { // 插入成功
+					String sqlConnCourse = String.format("INSERT INTO ci_course_users (course_id, user_id) " +
+							"VALUES (%s, '%s')", newId, user.getId()); // 在ci_course_users表中建立关联
+					Statement stat3 = conn.createStatement();
+					if (stat3.executeUpdate(sqlConnCourse) > 0) {
+						return true;
 					}
 				}
-				return false;
 			}
 			
 			
@@ -164,13 +170,19 @@ public class CourseDbOperator {
 		
 		return null;
 	}
-
+	
+	/**
+	 * 查询选择了课程的学生
+	 * @param courseId
+	 * @param user
+	 * @return
+	 */
 	public ArrayList<CourseMark> queryStudentSelectTheCourse(Integer courseId, User user) {
 		try {
 			Class.forName(DRIVER_NAME);
 			conn = DriverManager.getConnection(CONN_URL, USER_NAME, PASSWORD);
 			stat = conn.createStatement();
-			String sql = "SELECT user_id, mark FROM ci_course_users WHERE course_id = " + courseId;
+			String sql = "SELECT user_id FROM ci_course_users WHERE course_id = " + courseId;
 			rs = stat.executeQuery(sql);
 			ArrayList<CourseMark> marks = new ArrayList<CourseMark>();
 			while (rs.next()) {
@@ -183,7 +195,14 @@ public class CourseDbOperator {
 						CourseMark mark = new CourseMark();
 						mark.setUserId(id);
 						mark.setUserName(rs2.getString(2));
-						mark.setMark(Integer.valueOf(rs.getString(2)));
+						String sqlGrade = "SELECT grade FROM ci_grade WHERE student_id = '" + id + "' AND course_id =" + courseId;
+						Statement stat3 = conn.createStatement();
+						ResultSet rsGrade = stat3.executeQuery(sqlGrade);
+						if (rsGrade.first()) {
+							mark.setMark(Integer.valueOf(rsGrade.getString(1)));
+						} else {
+							mark.setMark(0);
+						}
 						marks.add(mark);
 					}
 				}
@@ -191,7 +210,7 @@ public class CourseDbOperator {
 			
 			return marks;
 		} catch (ClassNotFoundException e) {
-			System.out.println("Error when query student ");
+			System.out.println("Error when query student");
 			e.printStackTrace();
 		} catch (SQLException e) {
 			System.out.println("Error when query student");
@@ -200,15 +219,20 @@ public class CourseDbOperator {
 		
 		return null;
 	}
-
+	
+	/**
+	 * 更新学生成绩
+	 * @param marks
+	 * @return
+	 */
 	public boolean updateStudentMark(ArrayList<CourseMark> marks) {
 		try {
 			Class.forName(DRIVER_NAME);
 			conn = DriverManager.getConnection(CONN_URL, USER_NAME, PASSWORD);
 			stat = conn.createStatement();
 			for (CourseMark mark : marks) {
-				String sql = "UPDATE ci_course_users SET mark = " + mark.getMark() + " WHERE course_id = " + mark.getCourseId() 
-						+ " AND user_id = '" + mark.getUserId() + "'";
+				String sql = "UPDATE ci_grade SET grade = " + mark.getMark() + " WHERE course_id = " + mark.getCourseId() 
+						+ " AND student_id = '" + mark.getUserId() + "'";
 				if (stat.executeUpdate(sql) <= 0) {
 					return false;
 				}

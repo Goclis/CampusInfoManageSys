@@ -5,13 +5,13 @@ package vclient.srv;
 
 import java.util.ArrayList;
 
-import goclis.util.MessageStatusCode;
-import goclis.util.MessageType;
-import goclis.util.ObjectTransformer;
-import common.beans.Course;
-import common.beans.CourseMark;
-import common.beans.Message;
-import common.beans.User;
+import common.util.MessageStatusCode;
+import common.util.MessageType;
+import common.util.ObjectTransformer;
+import common.vo.Message;
+import common.vo.User;
+import common.vo.course.Course;
+import common.vo.course.CourseMark;
 
 /**
  * 提供选课系统服务的客户端服务类

@@ -16,9 +16,15 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import common.beans.User;
+import common.vo.User;
 
 import vclient.srv.ClientSrvHelper;
+import vclient.view.course.StudentCourseFrame;
+import vclient.view.course.TeacherCourseFrame;
+import vclient.view.schoolroll.SchoolRollManagerFrame;
+import vclient.view.schoolroll.SchoolRollStudentFrame;
+import vclient.view.store.ManagerStoreFrame;
+import vclient.view.store.UserStoreFrame;
 
 /**
  * 主界面
@@ -112,6 +118,13 @@ public class MainFrame extends JFrame implements ActionListener {
 		// TODO: 调用相应模块
 		if (e.getSource() == jbtSchollRoll) {
 			System.out.println("学籍管理");
+			if (user.getIdentity().equals("学生")) {
+				JFrame frame = new SchoolRollStudentFrame(user);
+				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			} else {
+				JFrame frame = new SchoolRollManagerFrame();
+				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			}
 		} else if (e.getSource() == jbtCourses) {
 			System.out.println("选课系统");
 			if (user.getIdentity().equals("学生")) {
@@ -125,6 +138,13 @@ public class MainFrame extends JFrame implements ActionListener {
 			System.out.println("图书馆");
 		} else if (e.getSource() == jbtStore) {
 			System.out.println("商店");
+			if (!user.getIdentity().equals("管理员")) {
+				JFrame frame = new UserStoreFrame(user);
+				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			} else { // 管理员界面
+				JFrame frame = new ManagerStoreFrame();
+				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			}
 		} else if (e.getSource() == jbtLogout) {
 			User userBack = ClientSrvHelper.logout(this.user);
 			if (userBack == null) {

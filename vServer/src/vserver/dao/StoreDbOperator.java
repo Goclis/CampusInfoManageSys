@@ -10,9 +10,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import common.beans.Good;
-import common.beans.ShoppingItem;
-import common.beans.User;
+import common.vo.User;
+import common.vo.store.Good;
+import common.vo.store.ShoppingItem;
 
 /**
  * @author goclis
@@ -25,10 +25,6 @@ public class StoreDbOperator {
 	private static String USER_NAME = "ci_manager";
 	private static String PASSWORD = "qqqqqq";
 	
-	private Connection conn;
-	private Statement stat;
-	private ResultSet rs;
-	
 	/**
 	 * 添加新商品
 	 * @param good -- 要添加的商品
@@ -36,33 +32,32 @@ public class StoreDbOperator {
 	 */
 	public boolean addNewGood(Good good) {
 		String gName = good.getName();
-		Integer gPrice = good.getPrice();
+		Double gPrice = good.getPrice();
 		Integer gNumber = good.getNumber();
 		String gType = good.getType();
 		
 		// Connect to database
 		try {
-			Class.forName(CONN_URL);
-			conn = DriverManager.getConnection(CONN_URL, USER_NAME, PASSWORD);
-			stat = conn.createStatement();
+			Class.forName(DRIVER_NAME);
+			Connection conn = DriverManager.getConnection(CONN_URL, USER_NAME, PASSWORD);
+			Statement stat = conn.createStatement();
 			
 			// 得到商品类型的ID
 			String sqlGetType = "SELECT id FROM ci_goodType WHERE name = '" + gType + "'";
-			rs = stat.executeQuery(sqlGetType);
+			ResultSet rs = stat.executeQuery(sqlGetType);
 			String gTypeId = "";
 			if (rs.first()) {
 				gTypeId = rs.getString(1);
 			}
 			
 			// TODO: 考虑添加对同名商品插入的检查
-			String sql = String.format("INSERT INTO ci_good (name, price, number, gType_id) values (%s, '%s', %s, %s, %s)",
+			String sql = String.format("INSERT INTO ci_good (name, price, number, gType_id) values ('%s', %s, %s, %s)",
 					gName, gPrice, gNumber, gTypeId);
 			stat.executeUpdate(sql);
 			return true;
 		} catch (ClassNotFoundException e) {
 			System.out.println("Error when add new good");
 			e.printStackTrace();
-			
 		} catch (SQLException e) {
 			System.out.println("Error when add new good");
 			e.printStackTrace();
@@ -79,12 +74,12 @@ public class StoreDbOperator {
 	public ArrayList<Good> queryByKey(String key) {
 		try {
 			Class.forName(DRIVER_NAME);
-			conn = DriverManager.getConnection(CONN_URL, USER_NAME, PASSWORD);
-			stat = conn.createStatement();
+			Connection conn = DriverManager.getConnection(CONN_URL, USER_NAME, PASSWORD);
+			Statement stat = conn.createStatement();
 			String sql = "SELECT ci_good.id, ci_good.name, ci_good.price, ci_good.number, ci_goodType.name " 
 					+ "FROM ci_good INNER JOIN ci_goodType ON ci_good.gType_id = ci_goodType.id " +
 					"WHERE ci_good.name LIKE '%" + key + "%'";
-			rs = stat.executeQuery(sql);
+			ResultSet rs = stat.executeQuery(sql);
 			ArrayList<Good> goods = new ArrayList<Good>();
 			while (rs.next()) {
 				Good good = new Good(rs.getString(1), rs.getString(2),
@@ -112,12 +107,12 @@ public class StoreDbOperator {
 	public ArrayList<Good> queryByType(String type) {
 		try {
 			Class.forName(DRIVER_NAME);
-			conn = DriverManager.getConnection(CONN_URL, USER_NAME, PASSWORD);
-			stat = conn.createStatement();
+			Connection conn = DriverManager.getConnection(CONN_URL, USER_NAME, PASSWORD);
+			Statement stat = conn.createStatement();
 			String sql = "SELECT ci_good.id, ci_good.name, ci_good.price, ci_good.number, ci_goodType.name " 
 					+ "FROM ci_good INNER JOIN ci_goodType ON ci_good.gType_id = ci_goodType.id " +
 					"WHERE ci_goodType.name = '" + type + "'";
-			rs = stat.executeQuery(sql);
+			ResultSet rs = stat.executeQuery(sql);
 			ArrayList<Good> goods = new ArrayList<Good>();
 			while (rs.next()) {
 				Good good = new Good(rs.getString(1), rs.getString(2),
@@ -141,7 +136,7 @@ public class StoreDbOperator {
 	 * 购物结算，改变商品库存，改变用户账户余额
 	 * @param list -- 要结算的list
 	 * @param user -- 购物者
-	 * @return 购物成功（不缺货）情况下返回null，缺货返回缺货商品的编号的列表
+	 * @return 购物成功（不缺货）情况下返回null，缺货返回缺货商品的编号的列表，余额不足返回空列表
 	 */
 	public ArrayList<Integer> buyGoods(ArrayList<ShoppingItem> list, User user) {
 		ArrayList<Integer> goodIds = null;
@@ -157,27 +152,50 @@ public class StoreDbOperator {
 				cost += itemCost;
 			}
 		}
-		
-		if ((goodIds == null) && updateAccount(user, -cost)) { // 无库存不足且扣费成功，即购物成功
+		// TODO: 应该添加对库存的更新.... - -#忘了...
+		if ((goodIds == null) && doUserPay(user, cost)) { // 无库存不足且扣费成功，即购物成功
+			// 改变库存
+			for (ShoppingItem item : list) {
+				try {
+					Class.forName(DRIVER_NAME);
+					Connection conn = DriverManager.getConnection(CONN_URL, USER_NAME, PASSWORD);
+					Statement stat = conn.createStatement();
+					String sql = "SELECT number, price FROM ci_good WHERE id = " + item.getGoodId();
+					ResultSet rs = stat.executeQuery(sql);
+					if (rs.first()) {
+						Integer reserve = Integer.valueOf(rs.getString(1)); // 商品库存
+						Integer newNum = reserve - item.getNumber();
+						sql = "UPDATE ci_good SET number = " + newNum + " WHERE id = " + item.getGoodId();
+						Statement stat2 = conn.createStatement();
+						stat2.executeUpdate(sql);
+					}
+				} catch (ClassNotFoundException e) {
+					System.out.println("Error when update reserve");
+					e.printStackTrace();
+				} catch (SQLException e) {
+					System.out.println("Error when update reserve");
+					e.printStackTrace();
+				} 
+			}
 			return null;
 		} else {
-			return goodIds;
+			return new ArrayList<Integer>();
 		}
 	}
 	
 	/**
-	 * 更新用户账户，新余额 = 原余额 + money
+	 * 扣款
 	 * @param user -- 要更新的用户
 	 * @param money -- 更新的数目
 	 * @return 成功（账户余额不变为负数）返回true，否则返回false
 	 */
-	private boolean updateAccount(User user, double money) {
+	private boolean doUserPay(User user, double money) {
 		try {
 			Class.forName(DRIVER_NAME);
-			conn = DriverManager.getConnection(CONN_URL, USER_NAME, PASSWORD);
-			stat = conn.createStatement();
+			Connection conn = DriverManager.getConnection(CONN_URL, USER_NAME, PASSWORD);
+			Statement stat = conn.createStatement();
 			String sql = "SELECT money FROM ci_account WHERE user_id = " + user.getId();
-			rs = stat.executeQuery(sql);
+			ResultSet rs = stat.executeQuery(sql);
 			
 			if (rs.first()) {
 				double userAccount = Double.valueOf(rs.getString(1));
@@ -185,7 +203,7 @@ public class StoreDbOperator {
 					return false;
 				} else {
 					userAccount -= money;
-					sql = "UPDATE TABLE ci_account SET money = " + userAccount 
+					sql = "UPDATE ci_account SET money = " + userAccount 
 							+ " WHERE user_id = " + user.getId();
 					stat.executeUpdate(sql);
 					return true;
@@ -210,20 +228,17 @@ public class StoreDbOperator {
 	private double dealWithShoppingItem(ShoppingItem item) {
 		try {
 			Class.forName(DRIVER_NAME);
-			conn = DriverManager.getConnection(CONN_URL, USER_NAME, PASSWORD);
-			stat = conn.createStatement();
+			Connection conn = DriverManager.getConnection(CONN_URL, USER_NAME, PASSWORD);
+			Statement stat = conn.createStatement();
 			String sql = "SELECT number, price FROM ci_good WHERE id = " + item.getGoodId();
-			rs = stat.executeQuery(sql);
+			ResultSet rs = stat.executeQuery(sql);
 			
 			if (rs.first()) {
 				Integer reserve = Integer.valueOf(rs.getString(1)); // 商品库存
 				if (reserve < item.getNumber()) { // 库存不足
 					return -1;
-				} else { // 满足，改变库存
-					Integer newNum = reserve - item.getNumber();
-					sql = "UPDATE TABLE SET number = " + newNum + " WHERE id = " + item.getGoodId();
-					stat.executeUpdate(sql);
-					double consume = item.getNumber() * Integer.valueOf(rs.getString(2)); // 计算价格
+				} else { // 满足，返回消费值
+					double consume = item.getNumber() * Double.valueOf(rs.getString(2)); // 计算价格
 					return consume;
 				}
 			}

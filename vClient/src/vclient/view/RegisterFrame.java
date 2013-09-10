@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import common.beans.User;
+import common.vo.User;
 
 import vclient.srv.ClientSrvHelper;
 

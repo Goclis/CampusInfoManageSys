@@ -3,14 +3,16 @@
  */
 package vserver.srv;
 
-import goclis.util.MessageStatusCode;
-import goclis.util.MessageType;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import vserver.dao.UserManageDbOperator;
-import common.beans.Message;
-import common.beans.User;
+import common.util.MessageStatusCode;
+import common.util.MessageType;
+import common.vo.Message;
+import common.vo.User;
+import common.vo.UserAccount;
 
 /**
  * 提供服务器端用户管理模块的服务
@@ -116,6 +118,53 @@ public class UserManageServerSrv {
 			msgRt.setData(null);
 		}
 		
+		return msgRt;
+	}
+	
+	/**
+	 * 查询用户余额
+	 * @param user -- 用户
+	 * @return 成功data域为余额，否则为null
+	 */
+	public Message queryAccount(User user) {
+		if (user == null) {
+			return Message.createFailureMessage();
+		}
+		
+		UserManageDbOperator dbOperator = new UserManageDbOperator();
+		Double restMoney = dbOperator.queryAccount(user);
+		
+		Message msgRt = new Message(MessageType.USER_QUERY_ACCOUNT, restMoney);
+		return msgRt;
+	}
+	
+	/**
+	 * 更新用户余额
+	 * @param accounts
+	 * @return
+	 */
+	public Message updateAccounts(ArrayList<UserAccount> accounts) {
+		if (accounts == null) {
+			return Message.createFailureMessage();
+		}
+		
+		UserManageDbOperator dbOperator = new UserManageDbOperator();
+		boolean bResult = dbOperator.updateAccounts(accounts);
+		
+		Message msgRt = new Message(MessageType.USER_UPDATE_ACCOUNT);
+		msgRt.setStatusCode(bResult ? MessageStatusCode.SUCCESS : MessageStatusCode.FAILED);
+		return msgRt;
+	}
+	
+	/**
+	 * 查询所有用户账户
+	 * @return
+	 */
+	public Message queryAllAccount() {
+		UserManageDbOperator dbOperator = new UserManageDbOperator();
+		ArrayList<UserAccount> accounts = dbOperator.queryAllAccount();
+		
+		Message msgRt = new Message(MessageType.USER_QUERY_ALL_ACCOUNT, accounts);
 		return msgRt;
 	}
 }

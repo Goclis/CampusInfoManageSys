@@ -15,7 +15,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import common.beans.User;
+
+import common.vo.User;
 
 import vclient.srv.ClientSrvHelper;
 
@@ -173,13 +174,13 @@ public class StartupFrame extends JFrame
 			// 创建User并发送登录请求
 			user = new User(userId, pwd, identity);
 			// TODO: 美化登录Loading界面
-			new LoadingThread(user, this).start(); // Loading界面
+			// new LoadingThread(user, this).start(); // Loading界面
 			user = ClientSrvHelper.login(user);
 			
 			// 处理登录结果
 			// TODO: 优化反馈信息
 			if (user == null) {
-				JOptionPane.showMessageDialog(this, "已登录或用户名密码错误");
+				JOptionPane.showMessageDialog(this, "用户名密码错误");
 			} else {
 				System.out.println("登录成功");
 				// TODO: 启动主界面

@@ -3,7 +3,6 @@
  */
 package vclient.srv;
 
-import goclis.util.ObjectTransformer;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -11,7 +10,8 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import common.beans.Message;
+import common.util.ObjectTransformer;
+import common.vo.Message;
 
 /**
  * 客户端服务类的抽象父类

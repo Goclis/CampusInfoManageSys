@@ -5,14 +5,14 @@ import java.util.concurrent.Callable;
 
 import vserver.dao.StoreDbOperator;
 
-import common.beans.Good;
-import common.beans.Message;
-import common.beans.ShoppingItem;
-import common.beans.User;
+import common.util.MessageStatusCode;
+import common.util.MessageType;
+import common.util.ObjectTransformer;
+import common.vo.Message;
+import common.vo.User;
+import common.vo.store.Good;
+import common.vo.store.ShoppingItem;
 
-import goclis.util.MessageStatusCode;
-import goclis.util.MessageType;
-import goclis.util.ObjectTransformer;
 
 public class StoreServerSrv {
 	/**

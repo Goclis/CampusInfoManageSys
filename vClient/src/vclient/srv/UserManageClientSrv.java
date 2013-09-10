@@ -3,12 +3,16 @@
  */
 package vclient.srv;
 
-import goclis.util.MessageType;
-import goclis.util.ObjectTransformer;
 
 import java.io.IOException;
-import common.beans.Message;
-import common.beans.User;
+import java.util.ArrayList;
+
+import common.util.MessageStatusCode;
+import common.util.MessageType;
+import common.util.ObjectTransformer;
+import common.vo.Message;
+import common.vo.User;
+import common.vo.UserAccount;
 
 /**
  * 提供客户端的用户管理服务
@@ -65,4 +69,44 @@ public class UserManageClientSrv extends ClientService {
 		return null;
 	}
 	
+	/**
+	 * 查询用户余额
+	 * @param user -- 用户
+	 * @return 成功返回余额，否则为空
+	 */
+	public Double queryUserAccount(User user) {
+		if (socket != null) {
+			Message msgQueryAccount = new Message(MessageType.USER_QUERY_ACCOUNT, user);
+			Message msgBack = sendMessage(msgQueryAccount, "查询用户余额");
+			return ObjectTransformer.getDouble(msgBack.getData());
+		}
+		return null;
+	}
+	
+	/**
+	 * 更新用户余额
+	 * @param accounts
+	 * @return
+	 */
+	public boolean updateUserAccount(ArrayList<UserAccount> accounts) {
+		if (socket != null) {
+			Message msg = new Message(MessageType.USER_UPDATE_ACCOUNT, accounts);
+			Message msgBack = sendMessage(msg, "更新用户账户");
+			return (msgBack.getStatusCode().equals(MessageStatusCode.SUCCESS)) ? true : false;
+		}
+		return false;
+	}
+	
+	/**
+	 * 查询所有用户账户情况
+	 * @return
+	 */
+	public ArrayList<UserAccount> queryAllAccount() {
+		if (socket != null) {
+			Message msg = new Message(MessageType.USER_QUERY_ALL_ACCOUNT);
+			Message msgBack = sendMessage(msg, "查询所有用户账户");
+			return ObjectTransformer.getAccountList(msgBack.getData());
+		}
+		return new ArrayList<UserAccount>();
+	}
 }
