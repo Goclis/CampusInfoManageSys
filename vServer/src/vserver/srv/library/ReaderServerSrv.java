@@ -78,7 +78,6 @@ public class ReaderServerSrv {
 			try {
 				vector = ReaderDao.findReader(reader, findType);
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			Message msgRt;

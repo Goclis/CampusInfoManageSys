@@ -34,6 +34,10 @@ public class MyTable extends JTable {
 		FitTableColumns(this);
 	}
 
+	public MyTable(DefaultTableModel model) {
+		super(model);
+	}
+
 	public void FitTableColumns(JTable myTable) {
 		JTableHeader header = myTable.getTableHeader();
 		int rowCount = myTable.getRowCount();

@@ -163,7 +163,7 @@ public class ServerSrvHelper implements Runnable {
 					|| type.equals(MessageType.BOOK_DELETE)
 					|| type.equals(MessageType.BOOK_FIND)
 					|| type.equals(MessageType.BOOK_MODIFY)) {
-				System.out.println("ServerSrvHelper:服务器成功获取处理类型");
+				// System.out.println("ServerSrvHelper:服务器成功获取处理类型");
 				BookServerSrv bookSrv = new BookServerSrv(this);
 				Book book = ObjectTransformer.getBook(msg.getData());
 				if (type.equals(MessageType.BOOK_ADD)) {
@@ -171,12 +171,10 @@ public class ServerSrvHelper implements Runnable {
 				} else if (type.equals(MessageType.BOOK_DELETE)) {
 					return bookSrv.deleteBook(book);
 				} else if (type.equals(MessageType.BOOK_FIND)) {
-					findType = msg.getFindType();
 					return bookSrv.findBook(book, findType);
 				} else if (type.equals(MessageType.BOOK_MODIFY)) {
 					return bookSrv.modifyBook(book);
 				}
-
 			} else if (type.equals(MessageType.READER_ADD)
 					|| type.equals(MessageType.READER_DELETE)
 					|| type.equals(MessageType.READER_FIND)
@@ -195,7 +193,6 @@ public class ServerSrvHelper implements Runnable {
 					return readerSrv.modifyReader(reader);
 				else if (type.equals(MessageType.REPORT_LOSS_OF_READER))
 					return readerSrv.reportLossReader(reader);
-
 			} else if (type.equals(MessageType.RULE_ADD)
 					|| type.equals(MessageType.RULE_DELETE)
 					|| type.equals(MessageType.RULE_FIND)
@@ -205,7 +202,6 @@ public class ServerSrvHelper implements Runnable {
 				if (type.equals(MessageType.RULE_ADD))
 					return ruleSrv.addRule(rule);
 				else if (type.equals(MessageType.RULE_FIND)) {
-					findType = msg.getFindType();
 					return ruleSrv.findRule(rule, findType);
 				} else if (type.equals(MessageType.RULE_DELETE))
 					return ruleSrv.deleteRule(rule);

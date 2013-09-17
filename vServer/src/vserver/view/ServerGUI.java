@@ -6,12 +6,14 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
+import vserver.dao.library.CheckDao;
 import vserver.srv.ServerSrvHelper;
 
 public class ServerGUI extends JFrame implements ActionListener {
@@ -35,7 +37,16 @@ public class ServerGUI extends JFrame implements ActionListener {
 		public void run() {
 			try {
 				serverSocket = new ServerSocket(port);
+//				try {
+//					//CheckDao.checkOrder();
+//					//CheckDao.checkReaders();
+//				} catch (SQLException e) {
+//					System.out.println("图书馆数据库需更新");
+//					e.printStackTrace();
+//				}
+				
 				System.out.println("Server Start");
+				
 				while (!closed) {
 					Socket socket = serverSocket.accept();
 					threadPools.execute(new ServerSrvHelper(socket));

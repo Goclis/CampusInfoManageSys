@@ -36,7 +36,8 @@ public class OrderBookPanel extends JPanel implements Variable, ActionListener {
 	private JPanel lowpanel;
 	private ReaderLibraryFrame parentF;
 	private Reader reader;
-	private JTable table;
+	JTable table;
+	Vector<String> columnNames = new Vector<String>();
 	private int selectedId;
 
 	//private ClientSrvOrderHelper orderClient = new ClientSrvOrderHelper();
@@ -57,6 +58,9 @@ public class OrderBookPanel extends JPanel implements Variable, ActionListener {
 		this.add(lowpanel, BorderLayout.SOUTH);
 		Vector datas = new Vector();
 		datas = ClientSrvHelper.findOrders(reader);
+		for (String str : ORDER_VARIABLE_LIST) {
+			columnNames.add(str);
+		}
 		table = new MyTable(datas, ORDER_VARIABLE_LIST);
 		int v = ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
 		int h = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;

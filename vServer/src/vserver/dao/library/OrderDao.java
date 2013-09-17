@@ -85,21 +85,23 @@ public class OrderDao {
 		rs = state.executeQuery(sql);
 		if (rs.next()) { // 有相同索书号的书可借，不可预约
 			terminate();
+			System.out.println("same ISO");
 			return null;
 		} else {
 			// 已经借阅或借阅了相同索书号的书，不能预约
 			if (BorrowDao.getBooksSameCallCode(reader, book)) {
 				terminate();
+				System.out.println("same book");
 				return null;
 			} else {
-				sql = "insert into ci_order ( ReaderId, BookId, StartDate, EndDate) values("
+				sql = "insert into ci_order ( ReaderId, BookId, StartDate, EndDate, Status) values("
 						+ readerId
 						+ ","
 						+ bookId
 						+ ",'"
 						+ startDate
 						+ "','"
-						+ endDate + "')";
+						+ endDate + "', false)";
 //				System.out.println(sql);
 				initialize();
 				state.executeUpdate(sql);
@@ -119,10 +121,15 @@ public class OrderDao {
 		initialize();
 		String sql = "select * from ci_order where Id=" + orderId + "";
 //		System.out.println(sql);
+		
 		rs = state.executeQuery(sql);
 		if (rs.next()) {
+			String bookId = rs.getString(3);
 			sql = "delete from ci_order where Id=" + orderId + "";
 //			System.out.println(sql);
+			Statement stat2 = conn.createStatement();
+			String sqlUpdate = "UPDATE ci_book SET Status = '可预约' WHERE Id = " + bookId;
+			stat2.executeUpdate(sqlUpdate);
 			state.executeUpdate(sql);
 			rs = null;
 			terminate();

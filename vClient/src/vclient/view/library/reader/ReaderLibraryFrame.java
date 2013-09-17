@@ -24,6 +24,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.table.DefaultTableModel;
 
 import vclient.srv.ClientSrvHelper;
 import vclient.srv.library.ClientSrvBorrowHelper;
@@ -42,7 +45,7 @@ import common.vo.library.Rule;
  * 读者图书馆的框架
  * @author zhongfang
  */
-public class ReaderLibraryFrame extends JFrame implements Variable {
+public class ReaderLibraryFrame extends JFrame implements Variable, ChangeListener {
 
 	// attributes
 	private Container c;
@@ -63,7 +66,7 @@ public class ReaderLibraryFrame extends JFrame implements Variable {
 		this.user = user;
 		this.reader = getReader();
 
-		checkReader();
+//		checkReader();
 
 		Border border = BorderFactory.createEtchedBorder(Color.BLACK,
 				Color.blue);
@@ -90,11 +93,7 @@ public class ReaderLibraryFrame extends JFrame implements Variable {
 				(screen.height - this.getSize().height) / 2);
 		this.setVisible(true);
 
-		this.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				System.exit(0);
-			}
-		});
+		tabbedp.addChangeListener(this);
 	}
 
 	public static void main(String[] args) {
@@ -151,6 +150,7 @@ public class ReaderLibraryFrame extends JFrame implements Variable {
 		Vector datas = new Vector();
 		datas = ClientSrvHelper.findBorrow(reader, FindType.PAST);
 		MyTable mt = new MyTable(datas, BORROW_PAST_LIST);
+		mt.setModel(new DefaultTableModel());
 		return mt;
 	}
 
@@ -162,39 +162,68 @@ public class ReaderLibraryFrame extends JFrame implements Variable {
 		return mt;
 	}
 
-	public void checkReader() {
-		Calendar ca = Calendar.getInstance();
-		Date now = ca.getTime();
-		Date certificate = null, effective = null, expire = null;
-		try {
-			certificate = sdf.parse(reader.getCertificateTime());
-			effective = sdf.parse(reader.getEffectiveTime());
-			expire = sdf.parse(reader.getExpireTime());
-		} catch (ParseException e1) {
-			e1.printStackTrace();
-		}
-		if (now.before(certificate)) {
-			reader.setStatus("未注册");
-			ClientSrvHelper.modifyReader(reader);
-//			System.out.print("设置为未注册");
-		} else if (now.after(certificate) && now.before(effective)) {
-			reader.setStatus("未激活");
-			ClientSrvHelper.modifyReader(reader);
-//			System.out.println("设置为未激活");
-		} else if (now.after(effective) && (reader.getStatus().equals("未激活"))) {
-			reader.setStatus("正常");
-			ClientSrvHelper.modifyReader(reader);
-//			System.out.println("时间到，激活读者证");
-		} else if (now.after(expire)) {
-			JOptionPane.showMessageDialog(this, "读者证已过期");
-			ClientSrvHelper.deleteReader(reader);
-			return;
-		}
+//	public void checkReader() {
+//		Calendar ca = Calendar.getInstance();
+//		Date now = ca.getTime();
+//		Date certificate = null, effective = null, expire = null;
+//		try {
+//			certificate = sdf.parse(reader.getCertificateTime());
+//			effective = sdf.parse(reader.getEffectiveTime());
+//			expire = sdf.parse(reader.getExpireTime());
+//		} catch (ParseException e1) {
+//			e1.printStackTrace();
+//		}
+//		if (now.before(certificate)) {
+//			reader.setStatus("未注册");
+//			ClientSrvHelper.modifyReader(reader);
+////			System.out.print("设置为未注册");
+//		} else if (now.after(certificate) && now.before(effective)) {
+//			reader.setStatus("未激活");
+//			ClientSrvHelper.modifyReader(reader);
+////			System.out.println("设置为未激活");
+//		} else if (now.after(effective) && (reader.getStatus().equals("未激活"))) {
+//			reader.setStatus("正常");
+//			ClientSrvHelper.modifyReader(reader);
+////			System.out.println("时间到，激活读者证");
+//		} else if (now.after(expire)) {
+//			JOptionPane.showMessageDialog(this, "读者证已过期");
+//			ClientSrvHelper.deleteReader(reader);
+//			return;
+//		}
+//
+//		if (!(reader.getStatus().equals("正常") || reader.getStatus()
+//				.equals("欠费")))
+//			JOptionPane.showMessageDialog(this, "你的读者证状态为" + reader.getStatus()
+//					+ "\n 请联系管理员");
+//	}
 
-		if (!(reader.getStatus().equals("正常") || reader.getStatus()
-				.equals("欠费")))
-			JOptionPane.showMessageDialog(this, "你的读者证状态为" + reader.getStatus()
-					+ "\n 请联系管理员");
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		int index = tabbedp.getSelectedIndex();
+		switch (index) {
+		case 1: // 正在借阅
+			Vector dataBorrow = new Vector();
+			BorrowingBookPanel borrowPanel = (BorrowingBookPanel) tabbedp.getSelectedComponent();
+			dataBorrow = ClientSrvHelper.findBorrow(reader, FindType.NOW);
+			((DefaultTableModel) (borrowPanel.table.getModel()))
+					.setDataVector(dataBorrow, borrowPanel.columnNames);
+			break;
+		case 2: // 借阅历史
+			Vector dataHistory = new Vector();
+			dataHistory = ClientSrvHelper.findBorrow(reader, FindType.PAST);
+			Vector<String> names = new Vector<String>();
+			for (String str: BORROW_PAST_LIST) {
+				names.add(str);
+			}
+			((DefaultTableModel)historyTable.getModel()).setDataVector(dataHistory, names);
+			break;
+		case 3: // 我的预约
+			OrderBookPanel orderPanel = (OrderBookPanel) tabbedp.getSelectedComponent();
+			Vector dataOrder = ClientSrvHelper.findOrders(reader);
+			((DefaultTableModel) (orderPanel.table.getModel()))
+					.setDataVector(dataOrder, orderPanel.columnNames);
+			break;
+		}
 	}
 
 }

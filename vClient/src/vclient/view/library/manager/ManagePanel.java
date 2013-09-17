@@ -95,7 +95,8 @@ public class ManagePanel extends JPanel implements ActionListener, Variable {
 		deletebt.addActionListener(this);
 		modifybt.addActionListener(this);
 
-		table = new JTable();
+		table = new JTable(new DefaultTableModel());
+		this.add(new JScrollPane(table));
 
 		p1 = new JPanel();
 		idBt = new JRadioButton("编号");
@@ -251,7 +252,6 @@ public class ManagePanel extends JPanel implements ActionListener, Variable {
 	}
 
 	public void find() {
-		String sql = null;
 		String text = jtf.getText();
 		if (text.equals("")) {
 			JOptionPane.showMessageDialog(this, "请输入查询条件！");
@@ -290,19 +290,7 @@ public class ManagePanel extends JPanel implements ActionListener, Variable {
 			if (datas == null)
 				JOptionPane.showMessageDialog(this, "不存在！");
 			else {
-				DefaultTableModel tm = new DefaultTableModel(datas, colNames) {
-					public boolean isCellEditable(int row, int col) {
-						return false;
-					}
-				};
-				this.cleanTable();
-				table.setModel(tm);
-				int v = ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED;
-				int h = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED;
-				FitTableColumns(table);
-				JScrollPane scroll = new JScrollPane(table, v, h);
-				this.add(scroll);
-				parentF.validate();
+				((DefaultTableModel) table.getModel()).setDataVector(datas, colNames);
 			}
 			jtf.setText("");
 			selectedId = 0;

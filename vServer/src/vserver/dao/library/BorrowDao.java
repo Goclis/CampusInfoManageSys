@@ -82,9 +82,10 @@ public class BorrowDao {
 			throws SQLException {
 		initialize();
 		Borrow borrow = new Borrow(reader, book);
+		System.out.println(book.getBookId());
 		readerId = reader.getReaderId();
 		id = borrow.getBorrowId();
-		bookId = book.getBookId();
+		int bookId = book.getBookId();
 		startTime = borrow.getStartTime();
 		deadLine = borrow.getDeadLine();
 		endTime = borrow.getEndTime();
@@ -93,6 +94,7 @@ public class BorrowDao {
 		double money = reader.getMoney();
 		// 已经借阅或预约了相同索书号的书
 		if (getBooksSameCallCode(reader, book)) {
+			System.out.println("here");
 			rs = null;
 			terminate();
 			return null;
@@ -138,6 +140,7 @@ public class BorrowDao {
 							+ renewTimes
 							+ ","
 							+ status + ")";
+					System.out.println(sql);
 					state1.executeUpdate(sql);
 					book.setStatus("可预约");
 					sql = "update ci_book set Status='" + book.getStatus()
@@ -227,7 +230,7 @@ public class BorrowDao {
 		rs = state1.executeQuery(sql);
 		if (rs.next()) { // 超期不得续借
 			id = rs.getInt(1);
-			deadLine = rs.getString(5);
+			deadLine = rs.getString(3);
 			renewTimes = rs.getInt(7);
 			int longerDays = reader.getRule().getMaxRenewDays();
 			Calendar ca = Calendar.getInstance();
@@ -266,11 +269,14 @@ public class BorrowDao {
 		initialize();
 		readerId = reader.getReaderId();
 		String callCode = book.getCallCode();
+		System.out.println(readerId + " " + callCode);
 		String sql = null;
 		sql = "select BookId from ci_borrow where ReaderId=" + readerId
 				+ " and Status=false";
+		System.out.println(sql);
 		rs = state1.executeQuery(sql);
 		while (rs.next()) {
+			System.out.println("no");
 			bookId = rs.getInt(1);
 			state2 = conn.createStatement();
 			sql = "select CallCode from ci_book where Id=" + bookId + "";
@@ -302,7 +308,7 @@ public class BorrowDao {
 
 	public static Vector findBorrow(Reader reader, Integer findType)
 			throws SQLException {
-		Vector<Vector<Object>> rows = new Vector<Vector<Object>>();
+		Vector rows = new Vector();
 		readerId = reader.getReaderId();
 		initialize();
 		rs = null;
@@ -319,7 +325,7 @@ public class BorrowDao {
 			return new Vector(0);
 		} else {
 			while (rs.next()) {
-				Vector<Object> v = new Vector<Object>();
+				Vector v = new Vector();
 				v.removeAllElements();
 				bookId = rs.getInt(3);
 
@@ -327,28 +333,30 @@ public class BorrowDao {
 				state2 = conn.createStatement();
 				ResultSet rs2 = state2.executeQuery(sql2);
 				if (rs2.next()) {
+					String bookName = rs2.getString("Name");
+					String author = rs2.getString("Author");
+					String startTime = rs.getString("StartTime");
+					String deadLine = rs.getString("DeadLine");
+					String renewTime = rs.getString("RenewTimes");
+					String storePlace = rs2.getString("StorePlace");
+					String endTime = rs.getString("EndTime");
+		
 					v.addElement(bookId);// bookId
-					v.addElement(rs2.getString(2));// bookName
-					v.addElement(rs2.getString(3));// Author
-					v.addElement(rs.getString(4));// startTIme
+					v.addElement(bookName);//v.addElement(rs2.getString(2));// bookName
+					v.addElement(author);//v.addElement(rs2.getString(3));// Author
+					v.addElement(startTime);//v.addElement(rs.getString(4));// startTIme
 					if (findType.equals(FindType.NOW)) {
-						v.addElement(rs.getString(5));// deadLine
-						v.addElement(rs.getInt(7));// renewTimes
+						v.addElement(deadLine);//v.addElement(rs.getString(5));// deadLine
+						v.addElement(renewTime);//v.addElement(rs.getInt(7));// renewTimes
 					} else
-						v.addElement(rs.getString(6));// endTime
+						v.addElement(endTime);//v.addElement(rs.getString(6));// endTime
 
-					v.addElement(rs2.getString(6));// storePlace
+					v.addElement(storePlace);//v.addElement(rs2.getString(6));// storePlace
 				}
 				rs2.close();
 				rows.addElement(v);
 			}
 			terminate();
-			for (Vector<Object> row : rows) {
-				for (Object ele : row) {
-					System.out.print(ele + " ");
-				}
-				System.out.println();
-			}
 			return rows;
 		}
 	}

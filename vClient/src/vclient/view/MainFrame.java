@@ -10,6 +10,8 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -21,6 +23,8 @@ import common.vo.User;
 import vclient.srv.ClientSrvHelper;
 import vclient.view.course.StudentCourseFrame;
 import vclient.view.course.TeacherCourseFrame;
+import vclient.view.library.manager.ManagerLibraryFrame;
+import vclient.view.library.reader.ReaderLibraryFrame;
 import vclient.view.schoolroll.SchoolRollManagerFrame;
 import vclient.view.schoolroll.SchoolRollStudentFrame;
 import vclient.view.store.ManagerStoreFrame;
@@ -75,6 +79,14 @@ public class MainFrame extends JFrame implements ActionListener {
 		jbtLibrary.addActionListener(this);
 		jbtStore.addActionListener(this);
 		jbtLogout.addActionListener(this);
+		
+		this.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				super.windowClosing(e);
+				ClientSrvHelper.logout(user);
+			}
+		});
 	}
 	
 	/**
@@ -136,6 +148,13 @@ public class MainFrame extends JFrame implements ActionListener {
 			}
 		} else if (e.getSource() == jbtLibrary) {
 			System.out.println("图书馆");
+			if (user.getIdentity().equals("管理员")) {
+				JFrame frame = new ManagerLibraryFrame();
+				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			} else {
+				JFrame frame = new ReaderLibraryFrame(user);
+				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			}
 		} else if (e.getSource() == jbtStore) {
 			System.out.println("商店");
 			if (!user.getIdentity().equals("管理员")) {

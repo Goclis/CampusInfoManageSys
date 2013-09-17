@@ -87,7 +87,6 @@ public class SchoolRollStudentFrame extends JFrame {
 
 			js.setViewportView(jtCourseView);
 			this.add(js, BorderLayout.CENTER);
-
 		}
 	}
 }

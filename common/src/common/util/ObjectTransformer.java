@@ -163,7 +163,6 @@ public final class ObjectTransformer {
 
 	public static Book getBook(Object obj) {
 		if (obj != null) {
-			System.out.println("开始obj转化为book");
 			return (Book) obj;
 		} else {
 			return null;

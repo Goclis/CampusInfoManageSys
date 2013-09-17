@@ -183,7 +183,8 @@ public class SearchPanel extends JPanel implements ActionListener {
 		} else if (e.getSource() == jbtInsertToList) { // 将所选商品加入购物车
 			int[] rows = jtSearchResult.getSelectedRows();
 			ArrayList<Good> goods = new ArrayList<Good>();
-			for (int i = 0; i < rows.length; i++) { // 如果有货
+			for (int i : rows) { // 如果有货
+				System.out.println(i);
 				if (Integer.valueOf((String) tableModel.getValueAt(i, 4)) > 0) {
 					Good good = new Good();
 					good.setId(Integer.valueOf((String) tableModel.getValueAt(i, 0)));
@@ -192,6 +193,7 @@ public class SearchPanel extends JPanel implements ActionListener {
 					good.setType((String) tableModel.getValueAt(i, 3));
 					good.setNumber(1);
 					goods.add(good);
+					System.out.println(good.getId());
 				}
 			}
 			shoppingList.addList(goods);

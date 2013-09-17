@@ -23,6 +23,8 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableModel;
@@ -68,6 +70,7 @@ public class FindBookPanel extends JPanel implements ActionListener, Variable {
 	//private ClientSrvOrderHelper orderClient = new ClientSrvOrderHelper();
 
 	public FindBookPanel(ReaderLibraryFrame parentF, Reader reader) {
+		
 		this.setLayout(new BorderLayout());
 		this.parentF = parentF;
 		this.reader = reader;
@@ -118,6 +121,7 @@ public class FindBookPanel extends JPanel implements ActionListener, Variable {
 			heads.addElement(BOOK_VARIABLES_LIST[i]);
 		}
 		table = new JTable(model); // modify
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		jpcenter.add(new JScrollPane(table));
 		searchbt.addActionListener(this);
 		classbt.addActionListener(this);
@@ -136,6 +140,10 @@ public class FindBookPanel extends JPanel implements ActionListener, Variable {
 				System.out.println("选中的行" + selectedId);
 			}
 		});
+	}
+
+	public FindBookPanel() {
+		this(null, null);
 	}
 
 	@Override
@@ -255,6 +263,7 @@ public class FindBookPanel extends JPanel implements ActionListener, Variable {
 				return;
 			} else {
 				Borrow borrow = null;
+				System.out.println(book.getBookId());
 				borrow = ClientSrvHelper.borrowBook(reader, book);
 				if (borrow == null) {
 					JOptionPane

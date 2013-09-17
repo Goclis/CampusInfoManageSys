@@ -95,7 +95,7 @@ public class ReaderInfoFrame extends JFrame implements Variable, ActionListener 
 
 		// 获取所有的Rule
 		Rule rule = new Rule();
-		rule.setRuleName(" ");
+		rule.setRuleName("");
 		rules = ClientSrvHelper.findRule(rule, FindType.BY_NAME);
 		Vector rulesName = new Vector();
 		String str = null;

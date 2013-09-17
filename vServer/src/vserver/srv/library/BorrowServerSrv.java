@@ -61,7 +61,6 @@ public class BorrowServerSrv {
 			try {
 				vector = BorrowDao.findBorrow(reader, findType);
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			Message msgRt;

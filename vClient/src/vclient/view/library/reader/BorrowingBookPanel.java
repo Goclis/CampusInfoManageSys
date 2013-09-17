@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 import vclient.srv.ClientSrvHelper;
 import vclient.srv.library.ClientSrvBookHelper;
@@ -33,7 +34,8 @@ import common.vo.library.Reader;
 public class BorrowingBookPanel extends JPanel implements ActionListener,
 		Variable {
 
-	private JTable table;
+	JTable table;
+	Vector<String> columnNames;
 	private JButton returnbt, lostbt, renewbt;
 	private JPanel p1, p2;
 	private JScrollPane scroll;
@@ -51,7 +53,13 @@ public class BorrowingBookPanel extends JPanel implements ActionListener,
 		this.setLayout(new BorderLayout());
 		Vector datas = new Vector();
 		datas = ClientSrvHelper.findBorrow(reader, FindType.NOW);
-		table = new MyTable(datas, BORROW_NOW_LIST);
+		System.out.println(datas == null);
+		columnNames = new Vector<String>();
+		for (String str : BORROW_NOW_LIST) {
+			columnNames.add(str);
+		}
+		DefaultTableModel model = new DefaultTableModel(datas, columnNames);
+		table = new MyTable(model);
 		scroll = new JScrollPane(table);
 		this.add(scroll);
 		this.parentF.validate();
